@@ -3,6 +3,7 @@
 
   let isJumping = false
   let obstacles = []
+  let gameOver = false
 
   const jumpDino = (e) => {
     try {
@@ -39,15 +40,15 @@
 
 <svelte:window on:keydown={(e) => jumpDino(e)} />
 
-<div class=" flex h-screen w-screen flex-col items-center justify-center overflow-hidden bg-gray-500/50">
-  <!-- <div class="relative"> -->
-    <div class="w-full pl-40 text-5xl text-red-500" style="transform: translateY({isJumping ? '-100px' : '0'})">
-      <i class="fa-solid fa-t-rex" />
+<div class=" flex h-screen w-screen flex-col items-center justify-center overflow-hidden bg-gray-900">
+  <div class="relative w-full">
+    <div class="absolute bottom-0 left-10 w-full text-5xl text-white" style="transform: translateY({isJumping ? '-100px' : '0'})">
+      <i class="fa-solid fa-bird" />
     </div>
     {#each obstacles as obstacle}
       <div class="absolute bottom-0" style="left: {obstacle.position}px;">
-        <i class="fa-solid fa-cactus" />
+        <i class="fa-solid fa-cactus text-2xl text-gray-300" />
       </div>
     {/each}
-  <!-- </div> -->
+  </div>
 </div>
