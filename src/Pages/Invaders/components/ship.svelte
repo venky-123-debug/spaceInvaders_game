@@ -14,7 +14,7 @@
   }
 
   const fireBullet = () => {
-    bullets.push({ x: spaceshipPosition + spaceShip.offsetWidth / 2, y: spaceShip.offsetTop })
+    bullets.push({ x: spaceshipPosition + spaceShip.offsetWidth /2.3, y: spaceShip.offsetTop })
   }
 
   const moveBullets = () => {
@@ -40,18 +40,11 @@
 
 <svelte:window on:keydown|stopPropagation={handleKeyDown} />
 <div bind:this={spaceShip} class="absolute bottom-10" style="left: {spaceshipPosition}px;">
-  <i class="fa-sharp fa-solid fa-person-rifle text-2xl text-white" />
+  <i class="fa-duotone fa-starfighter text-5xl text-white" />
 </div>
 
 {#each bullets as bullet}
-  <div class="bullet" style="left: {bullet.x}px; top: {bullet.y}px;" />
+  <i class="fa-solid fa-golf-ball-tee absolute text-md text-white" style="left: {bullet.x}px; top: {bullet.y}px;"></i>
 {/each}
 
-<style>
-  .bullet {
-    position: absolute;
-    width: 5px;
-    height: 10px;
-    background-color: white;
-  }
-</style>
+
