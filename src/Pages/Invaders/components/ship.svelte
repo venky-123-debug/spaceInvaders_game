@@ -35,6 +35,7 @@
   }
 
   onMount(() => {
+    spaceshipPosition = window.innerWidth / 2
     containerWidth = spaceShip.parentElement.offsetWidth
     requestAnimationFrame(moveBullets)
   })

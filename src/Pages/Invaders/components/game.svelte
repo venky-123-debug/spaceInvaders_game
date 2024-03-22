@@ -1,15 +1,14 @@
 <script>
   import Player from "./ship.svelte"
   import Enemy from "./villains.svelte"
-  import { onMount, onDestroy } from "svelte"
+  import { onMount, onDestroy, afterUpdate } from "svelte"
 
   let spaceShip
-  const gridWidth = 20
-  const gridHeight = 8
-  const villainWidth = 20
-  const villainHeight = 20
-  const stepSize = 5
-  const stepInterval = 1000
+  let gridWidth = 20
+  let gridHeight = 8
+  let villainWidth = 20
+  let villainHeight = 20
+  let intervalTimeOut
 
   let lastFrameTime = 0
 
@@ -20,11 +19,20 @@
   onMount(() => {
     containerWidth = window.innerWidth
     initializeVillains()
-    startAnimation()
+  })
+  afterUpdate(() => {
+    if (villains) {
+      moveVillains()
+      startAnimation()
+    }
   })
 
+  $: moveVillains()
+  
   onDestroy(() => {
-    cancelAnimationFrame(animationFrame)
+    clearTimeout(intervalTimeOut)
+
+    // cancelAnimationFrame(animationFrame)
   })
 
   const initializeVillains = () => {
@@ -35,63 +43,64 @@
     }
 
     villains.forEach((villain) => {
-      console.log({villain})
+      // console.log({ villain })
       villain.x = villain.x % containerWidth
     })
   }
 
-  const moveVillains = () => {
-  villains.forEach((villain) => {
-    villain.x = Number(villain.x) + 10;
-  });
-
-  // Check if any villain has gone beyond the container width
-  let maxX = Math.max(...villains.map((v) => Number(v.x)));
-  let minX = Math.min(...villains.map((v) => Number(v.x)));
-  // console.log({maxX})
-  // console.log({minX})
-
-  if (maxX >= containerWidth) {
-    // Wrap villains back to the left side
-    villains = villains.map((v) => ({ ...v, x: Number(v.x) - containerWidth }));
-  } else if (minX <= 0) {
-    // Wrap villains back to the right side
-    villains = villains.map((v) => ({ ...v, x: Number(v.x) + containerWidth }));
-  }
-
-  // Request the next animation frame
-  animationFrame = requestAnimationFrame(moveVillains);
-};
-
-
-
-
   // const moveVillains = () => {
-  //   villains.forEach((villain) => {
-  //     console.log({ villain})
-  //     villain.x = Number(villain.x) + 10
-  //   })
-  //   let maxX = Math.max(...villains.map((v) => Number(v.x)))
-  //   let minX = Math.min(...villains.map((v) => Number(v.x)))
+  //   try {
+  //     intervalTimeOut = setInterval(() => {
+  //       console.log({ villains })
+  //       for (let i = 0; i < villains.length; i++) {
+  //         if (!isNaN(villains[i].x)) {
+  //           console.log("villains[i].x", villains[i].x)
+  //           villains[i].x = Number(villains[i].x) + 10
+  //           console.log("villains[i].x", villains[i].x)
 
-  //   if (maxX >= containerWidth) {
-  //     villains = villains.map((v) => ({ ...v, x: Number(v.x) - containerWidth }))
-  //   } else if (minX <= 0) {
-  //     villains = villains.map((v) => ({ ...v, x: Number(v.x) + containerWidth }))
+  //           // Check if the last enemy has gone beyond the container width
+  //           if (villains[villains.length - 1].x >= containerWidth) {
+  //             villains[i].x -= 10
+  //           } else if (villains[0].x <= 0) {
+  //             villains[i].x += 10
+  //           }
+  //         } else {
+  //           console.error("Invalid x-coordinate detected:", villains[i].x)
+  //         }
+  //         console.log(villains[i].x)
+  //       }
+  //     }, 500)
+  //   } catch (error) {
+  //     clearTimeout(intervalTimeOut)
   //   }
-
-  //   animationFrame = requestAnimationFrame(moveVillains)
   // }
 
+  const moveVillains = () => {
+    try {
+        intervalTimeOut = setInterval(() => {
+            for (let i = 0; i < villains.length; i++) {
+                villains[i].x += 10;
+
+                // If enemy goes beyond the container width, move them back to the left
+                if (villains[i].x >= containerWidth) {
+                    villains[i].x = -villainWidth;
+                }
+            }
+        }, 500)
+    } catch (error) {
+        clearTimeout(intervalTimeOut)
+    }
+}
+
+
   const startAnimation = () => {
-    animationFrame = requestAnimationFrame(moveVillains)
+    // animationFrame = requestAnimationFrame(moveVillains)
   }
 </script>
 
 <div class="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-black">
   <div class="absolute top-10 grid gap-2" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
     {#each villains as villain}
-      <!-- <div class="villain"></div> -->
       <Enemy bind:villain />
     {/each}
   </div>
