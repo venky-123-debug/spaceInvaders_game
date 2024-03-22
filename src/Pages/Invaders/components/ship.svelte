@@ -2,6 +2,8 @@
   import { onMount } from "svelte"
 
   export let spaceShip
+
+  let containerWidth = 0
   let spaceshipPosition = 0
   let bullets = []
 
@@ -30,7 +32,6 @@
     moveShip(e)
   }
 
-  let containerWidth = 0
 
   onMount(() => {
     containerWidth = spaceShip.parentElement.offsetWidth

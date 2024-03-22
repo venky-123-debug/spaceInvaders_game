@@ -1,14 +1,14 @@
 <script>
   import Player from "./ship.svelte"
-  import Enemy from "./Villain.svelte"
+  import Enemy from "./villains.svelte"
   import { onMount, onDestroy } from "svelte"
 
   let spaceShip
-  const gridWidth = 5; // Number of villains in a row
-  const gridHeight = 8; // Number of rows
-  const villainWidth = 20; // Width of each villain
-  const villainHeight = 20; // Height of each villain
-  const moveSpeed = 0.5; // Speed of horizontal movement
+  const gridWidth = 20
+  const gridHeight = 8
+  const villainWidth = 20
+  const villainHeight = 20
+  const moveSpeed = 0.5
 
   let villains = [];
   let containerWidth = 0;
@@ -35,7 +35,6 @@
   const moveVillains = () => {
     villains = villains.map(v => ({ ...v, x: v.x + moveSpeed }));
 
-    // Check if the grid is about to move beyond the window boundaries
     const maxX = Math.max(...villains.map(v => v.x));
     const minX = Math.min(...villains.map(v => v.x));
 
@@ -56,19 +55,12 @@
 </script>
 
 <div class="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-black">
-  <div class="villain-grid" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
+  <div class="absolute top-10 grid gap-2" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
     {#each villains as villain}
-      <Enemy style="left: {villain.x}px; top: {villain.y}px;" />
+      <!-- <div class="villain"></div> -->
+      <Enemy bind:villain />
     {/each}
   </div>
   <Player bind:spaceShip />
 </div>
 
-<style>
-  .villain-grid {
-    position: absolute;
-    display: grid;
-    grid-gap: 10px; /* Gap between villains */
-    margin-top: 50px; /* Adjust as needed */
-  }
-</style>
