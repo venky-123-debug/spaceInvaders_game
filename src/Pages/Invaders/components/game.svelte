@@ -8,50 +8,84 @@
   const gridHeight = 8
   const villainWidth = 20
   const villainHeight = 20
-  const moveSpeed = 0.5
+  const stepSize = 5
+  const stepInterval = 1000
 
-  let villains = [];
-  let containerWidth = 0;
-  let animationFrame;
+  let lastFrameTime = 0
+
+  let villains = []
+  let containerWidth = 0
+  let animationFrame
 
   onMount(() => {
-    containerWidth = window.innerWidth;
-    initializeVillains();
-    startAnimation();
-  });
+    containerWidth = window.innerWidth
+    initializeVillains()
+    startAnimation()
+  })
 
   onDestroy(() => {
-    cancelAnimationFrame(animationFrame);
-  });
+    cancelAnimationFrame(animationFrame)
+  })
 
   const initializeVillains = () => {
     for (let row = 0; row < gridHeight; row++) {
       for (let col = 0; col < gridWidth; col++) {
-        villains.push({ x: col * (villainWidth + 10), y: row * (villainHeight + 10) });
+        villains.push({ x: col * (villainWidth + 10), y: row * (villainHeight + 10) })
       }
     }
-  };
+
+    villains.forEach((villain) => {
+      console.log({villain})
+      villain.x = villain.x % containerWidth
+    })
+  }
 
   const moveVillains = () => {
-    villains = villains.map(v => ({ ...v, x: v.x + moveSpeed }));
+  villains.forEach((villain) => {
+    villain.x = Number(villain.x) + 10;
+  });
 
-    const maxX = Math.max(...villains.map(v => v.x));
-    const minX = Math.min(...villains.map(v => v.x));
+  // Check if any villain has gone beyond the container width
+  let maxX = Math.max(...villains.map((v) => Number(v.x)));
+  let minX = Math.min(...villains.map((v) => Number(v.x)));
+  // console.log({maxX})
+  // console.log({minX})
 
-    if (maxX >= containerWidth) {
-      // If the grid is about to move beyond the right edge, shift it back to the left
-      villains = villains.map(v => ({ ...v, x: v.x - containerWidth }));
-    } else if (minX <= 0) {
-      // If the grid is about to move beyond the left edge, shift it back to the right
-      villains = villains.map(v => ({ ...v, x: v.x + containerWidth }));
-    }
+  if (maxX >= containerWidth) {
+    // Wrap villains back to the left side
+    villains = villains.map((v) => ({ ...v, x: Number(v.x) - containerWidth }));
+  } else if (minX <= 0) {
+    // Wrap villains back to the right side
+    villains = villains.map((v) => ({ ...v, x: Number(v.x) + containerWidth }));
+  }
 
-    animationFrame = requestAnimationFrame(moveVillains);
-  };
+  // Request the next animation frame
+  animationFrame = requestAnimationFrame(moveVillains);
+};
+
+
+
+
+  // const moveVillains = () => {
+  //   villains.forEach((villain) => {
+  //     console.log({ villain})
+  //     villain.x = Number(villain.x) + 10
+  //   })
+  //   let maxX = Math.max(...villains.map((v) => Number(v.x)))
+  //   let minX = Math.min(...villains.map((v) => Number(v.x)))
+
+  //   if (maxX >= containerWidth) {
+  //     villains = villains.map((v) => ({ ...v, x: Number(v.x) - containerWidth }))
+  //   } else if (minX <= 0) {
+  //     villains = villains.map((v) => ({ ...v, x: Number(v.x) + containerWidth }))
+  //   }
+
+  //   animationFrame = requestAnimationFrame(moveVillains)
+  // }
 
   const startAnimation = () => {
-    animationFrame = requestAnimationFrame(moveVillains);
-  };
+    animationFrame = requestAnimationFrame(moveVillains)
+  }
 </script>
 
 <div class="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-black">
@@ -63,4 +97,3 @@
   </div>
   <Player bind:spaceShip />
 </div>
-

@@ -3,6 +3,6 @@
 </script>
 
 <svelte:head>
-  <title>Arcade Games</title>
+  <title>Space Invaders</title>
 </svelte:head>
 <Game />
