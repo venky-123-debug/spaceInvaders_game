@@ -17,8 +17,9 @@
   }
 
   const fireBullet = () => {
-    bullets.push({ x: spaceshipPosition + spaceShip.offsetWidth / 2.3, y: spaceShip.offsetTop })
-    dispatch("fireEnemy")
+    let bullet = { x: spaceShip.getBoundingClientRect().left + spaceShip.offsetWidth / 2.3, y: spaceShip.getBoundingClientRect().top }
+    bullets.push(bullet)
+    dispatch("fireEnemy", bullet)
   }
 
   const moveBullets = () => {

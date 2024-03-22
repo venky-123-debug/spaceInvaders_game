@@ -28,7 +28,7 @@
   })
 
   $: moveVillains()
-  
+
   onDestroy(() => {
     clearTimeout(intervalTimeOut)
 
@@ -44,6 +44,7 @@
 
     villains.forEach((villain) => {
       // console.log({ villain })
+      // console.log(typeof villain.x)
       villain.x = villain.x % containerWidth
     })
   }
@@ -77,24 +78,47 @@
 
   const moveVillains = () => {
     try {
-        intervalTimeOut = setInterval(() => {
-            for (let i = 0; i < villains.length; i++) {
-                villains[i].x += 10;
+      // intervalTimeOut = setInterval(() => {
+      for (let i = 0; i < villains.length; i++) {
+        // console.log("loops")
+        // console.log("loops",villains[i].x)
+        // console.log(typeof villains[i].x)
 
-                // If enemy goes beyond the container width, move them back to the left
-                if (villains[i].x >= containerWidth) {
-                    villains[i].x = -villainWidth;
-                }
-            }
-        }, 500)
+        villains[i].x = Number(villains[i].x) + 10
+        // console.log("loops", villains[i].x)
+
+        if (villains[i].x >= containerWidth) {
+          villains[i].x = -villainWidth
+        }
+      }
+      // }, 100)
     } catch (error) {
-        clearTimeout(intervalTimeOut)
+      clearTimeout(intervalTimeOut)
     }
-}
-
+  }
 
   const startAnimation = () => {
-    // animationFrame = requestAnimationFrame(moveVillains)
+    animationFrame = requestAnimationFrame(moveVillains)
+  }
+
+  const killEnemy = (event) => {
+    let bullet = event.detail
+    console.log({bullet})
+    let bulletX = bullet.x
+    let bulletY = bullet.y
+
+    // Check collision of each villain with the bullet
+    for (let i = 0; i < villains.length; i++) {
+      let centerX = villains[i].x + villainWidth / 2
+      let centerY = villains[i].y + villainHeight / 2
+
+      let distance = Math.sqrt((bulletX - centerX) ** 2 + (bulletY - centerY) ** 2)
+
+      if (distance < (villainWidth + villainHeight) / 2) {
+        villains.splice(i, 1)
+        break 
+      }
+    }
   }
 </script>
 
@@ -104,5 +128,5 @@
       <Enemy bind:villain />
     {/each}
   </div>
-  <Player bind:spaceShip />
+  <Player bind:spaceShip on:fireEnemy={(e) => killEnemy(e)} />
 </div>
