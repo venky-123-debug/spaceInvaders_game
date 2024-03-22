@@ -1,7 +1,7 @@
 <script>
+  import { onMount, onDestroy, afterUpdate } from "svelte"
   import Player from "./ship.svelte"
   import Enemy from "./villains.svelte"
-  import { onMount, onDestroy, afterUpdate } from "svelte"
 
   let spaceShip
   let gridWidth = 20
@@ -13,8 +13,10 @@
   let lastFrameTime = 0
 
   let villains = []
+  let enemyBullets = []
   let containerWidth = 0
   let animationFrame
+  let emnemyBulletFrame
 
   onMount(() => {
     containerWidth = window.innerWidth
@@ -24,15 +26,17 @@
     if (villains) {
       moveVillains()
       startAnimation()
+      enemyFireBullets()
     }
   })
 
-  $: moveVillains()
+  $: {
+    moveVillains()
+    startEnemyBulletInterval()
+  }
 
   onDestroy(() => {
     clearTimeout(intervalTimeOut)
-
-    // cancelAnimationFrame(animationFrame)
   })
 
   const initializeVillains = () => {
@@ -43,55 +47,18 @@
     }
 
     villains.forEach((villain) => {
-      // console.log({ villain })
-      // console.log(typeof villain.x)
       villain.x = villain.x % containerWidth
     })
   }
 
-  // const moveVillains = () => {
-  //   try {
-  //     intervalTimeOut = setInterval(() => {
-  //       console.log({ villains })
-  //       for (let i = 0; i < villains.length; i++) {
-  //         if (!isNaN(villains[i].x)) {
-  //           console.log("villains[i].x", villains[i].x)
-  //           villains[i].x = Number(villains[i].x) + 10
-  //           console.log("villains[i].x", villains[i].x)
-
-  //           // Check if the last enemy has gone beyond the container width
-  //           if (villains[villains.length - 1].x >= containerWidth) {
-  //             villains[i].x -= 10
-  //           } else if (villains[0].x <= 0) {
-  //             villains[i].x += 10
-  //           }
-  //         } else {
-  //           console.error("Invalid x-coordinate detected:", villains[i].x)
-  //         }
-  //         console.log(villains[i].x)
-  //       }
-  //     }, 500)
-  //   } catch (error) {
-  //     clearTimeout(intervalTimeOut)
-  //   }
-  // }
-
   const moveVillains = () => {
     try {
-      // intervalTimeOut = setInterval(() => {
       for (let i = 0; i < villains.length; i++) {
-        // console.log("loops")
-        // console.log("loops",villains[i].x)
-        // console.log(typeof villains[i].x)
-
         villains[i].x = Number(villains[i].x) + 10
-        // console.log("loops", villains[i].x)
-
         if (villains[i].x >= containerWidth) {
           villains[i].x = -villainWidth
         }
       }
-      // }, 100)
     } catch (error) {
       clearTimeout(intervalTimeOut)
     }
@@ -101,22 +68,83 @@
     animationFrame = requestAnimationFrame(moveVillains)
   }
 
+  const startEnemyBulletInterval = () => {
+    let interval = 2000 // Interval set to 2 seconds
+    intervalTimeOut = setTimeout(() => {
+      enemyFireBullets()
+      startEnemyBulletInterval()
+    }, interval)
+  }
+
+  // const enemyFireBullets = () => {
+  //   villains.forEach((villain) => {
+  //     // Determine the number of bullets to fire (1 or 2)
+  //     let numBullets = Math.floor(Math.random()) + 1
+  //     console.log({ numBullets })
+  //     for (let i = 0; i < numBullets; i++) {
+  //       if (Math.random() < 0.4) {
+  //         enemyBullets.push({ x: villain.x + villainWidth / 2, y: villain.y + villainHeight })
+  //       }
+  //     }
+  //   })
+
+  //   enemyBullets.forEach((bullet) => {
+  //     bullet.y += 2
+  //   })
+
+  //   enemyBullets = enemyBullets.filter((bullet) => bullet.y < window.innerHeight)
+  // }
+
+//   const enemyFireBullets = () => {
+//     // Clear existing bullets
+//     enemyBullets = []
+
+//     // Shuffle villains array
+//     villains.sort(() => Math.random() - 0.5)
+
+//     // Determine the number of bullets to fire (2 or 3)
+//     let numBulletsToFire = Math.floor(Math.random() * 2) + 2
+
+//     // Select numBulletsToFire villains to shoot bullets
+//     let selectedVillains = villains.slice(0, numBulletsToFire)
+
+//     selectedVillains.forEach((villain) => {
+//         // Fire 2 or 3 bullets from each selected villain
+//         let numBullets = Math.floor(Math.random() * 2) + 2
+
+//         for (let i = 0; i < numBullets; i++) {
+//             if (Math.random() < 0.4) {
+//                 enemyBullets.push({ x: villain.x + villainWidth / 2, y: villain.y + villainHeight })
+//             }
+//         }
+//     })
+
+//     // Move bullets
+//     enemyBullets.forEach((bullet) => {
+//         bullet.y += 2
+//     })
+
+//     // Remove bullets that have gone off-screen
+//     enemyBullets = enemyBullets.filter((bullet) => bullet.y < window.innerHeight)
+// }
+
+
   const killEnemy = (event) => {
     let bullet = event.detail
-    console.log({bullet})
     let bulletX = bullet.x
     let bulletY = bullet.y
 
-    // Check collision of each villain with the bullet
     for (let i = 0; i < villains.length; i++) {
       let centerX = villains[i].x + villainWidth / 2
       let centerY = villains[i].y + villainHeight / 2
 
       let distance = Math.sqrt((bulletX - centerX) ** 2 + (bulletY - centerY) ** 2)
 
-      if (distance < (villainWidth + villainHeight) / 2) {
-        villains.splice(i, 1)
-        break 
+      if (Math.abs(bulletY - centerY) < villainHeight / 2) {
+        if (distance < (villainWidth + villainHeight) / 2) {
+          villains.splice(i, 1)
+          break
+        }
       }
     }
   }
@@ -126,6 +154,9 @@
   <div class="absolute top-10 grid gap-2" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
     {#each villains as villain}
       <Enemy bind:villain />
+    {/each}
+    {#each enemyBullets as bullet}
+      <div class="text-md absolute text-white" style="left: {bullet.x}px; top: {bullet.y}px;"><i class="fa-duotone fa-cloud-bolt" /></div>
     {/each}
   </div>
   <Player bind:spaceShip on:fireEnemy={(e) => killEnemy(e)} />

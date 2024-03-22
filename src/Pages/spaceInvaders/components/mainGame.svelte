@@ -1,9 +1,9 @@
 <script>
   import { onMount } from "svelte";
-  import Player from "./Player.svelte";
-  import Enemy from "./Enemy.svelte";
-  import Bullet from "./Bullet.svelte";
-  import { collides } from "./collisionDetection.js";
+  import Player from "./mainPlayer.svelte";
+  import Enemy from "./mainEnemy.svelte";
+  import Bullet from "./mainBullet.svelte";
+  import { collides } from "../scripts/collision";
 
   let canvas;
   let ctx;
@@ -19,12 +19,25 @@
 
   function initGame() {
     // Initialize player
-    player = new Player(400, 550, 20, 20, "#0099CC", canvas.width);
+    player = new Player({
+      x: 400,
+      y: 550,
+      width: 20,
+      height: 20,
+      color: "#0099CC",
+      canvasWidth: canvas.width
+    });
 
     // Initialize enemies
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 20; j++) {
-        enemies.push(new Enemy(30 + j * 35, 30 + i * 35, 20, 20, "#FF0000"));
+        enemies.push(new Enemy({
+          x: 30 + j * 35,
+          y: 30 + i * 35,
+          width: 20,
+          height: 20,
+          color: "#FF0000"
+        }));
       }
     }
   }
@@ -86,7 +99,14 @@
       player.moveRight();
     } else if (event.key === " ") {
       // Fire bullet
-      bullets.push(new Bullet(player.x + 8, player.y, 4, 8, "#FF7800", -5));
+      bullets.push(new Bullet({
+        x: player.x + 8,
+        y: player.y,
+        width: 4,
+        height: 8,
+        color: "#FF7800",
+        dy: -5
+      }));
     }
   }
 

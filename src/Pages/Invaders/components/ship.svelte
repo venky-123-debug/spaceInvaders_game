@@ -15,11 +15,14 @@
       spaceshipPosition += 10
     }
   }
-
+  // let distanceFromTop
   const fireBullet = () => {
     let bullet = { x: spaceShip.getBoundingClientRect().left + spaceShip.offsetWidth / 2.3, y: spaceShip.getBoundingClientRect().top }
+    //  distanceFromTop = spaceShip.getBoundingClientRect().top // Calculate distance from the top of the screen
     bullets.push(bullet)
+    // console.log({ distanceFromTop })
     dispatch("fireEnemy", bullet)
+    // dispatch("fireEnemy", { bullet, distanceFromTop })
   }
 
   const moveBullets = () => {
@@ -27,6 +30,20 @@
     bullets.forEach((bullet) => (bullet.y -= 5))
     requestAnimationFrame(moveBullets)
   }
+
+  // const moveBullets = () => {
+  //   bullets = bullets.filter((bullet) => bullet.y > 0)
+  //   bullets.forEach((bullet) => {
+  //     let distanceToTop = window.innerHeight - bullet.y; // Distance to top of the screen
+  //       console.log("Distance to top of the screen:", distanceToTop);
+  //     bullet.y -= 5 // Move the bullet upwards
+
+  //     // Calculate the distance moved
+  //     let distanceMoved = distanceFromTop - bullet.y
+  //     console.log("Distance moved by the bullet:", distanceMoved)
+  //   })
+  //   requestAnimationFrame(moveBullets)
+  // }
 
   const handleKeyDown = (e) => {
     if (e.code === "Space") {
