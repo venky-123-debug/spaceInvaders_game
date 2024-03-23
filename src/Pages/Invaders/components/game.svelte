@@ -42,26 +42,78 @@
     })
   }
 
+  let isMove = true
   const moveVillains = () => {
     try {
-      let villainSpeed = 0.5
-      for (let i = 0; i < villains.length; i++) {
-        villains[i].x += villainSpeed
-      }
-     
+      let villainSpeed = 0.7
+      
 
-      for (let i = 0; i < villains.length; i++) {
-        if (villains[villains.length - 1].x >= containerWidth ) {
+      if (!isMove) {
+        for (let i = 0; i < villains.length; i++) {
           villains[i].x -= villainSpeed
         }
-        if (villains[0].x <= 0) {
-          villains[i].x -= villainSpeed
+        if (villains[0].x <= -containerWidth/4 ) {
+          isMove = true
+        }
+      } else {
+        for (let i = 0; i < villains.length; i++) {
+          villains[i].x += villainSpeed
+        }
+        if (villains[villains.length - 1].x >= containerWidth / 4) {
+          isMove = false
         }
       }
+      console.log({ isMove })
     } catch (error) {
       clearTimeout(intervalTimeOut)
     }
   }
+
+  // const moveVillains = () => {
+  //   try {
+  //     let villainSpeed = 0.7
+  //     // console.log(containerWidth, "containerWidth")
+  //     // console.log(villains[villains.length - 1].x, "villains[villains.length - 1].x")
+  //     // console.log(villains[0].x, "villains[0].x")
+  //     let isMove = true
+  //     if (!isMove) {
+  //       for (let i = 0; i < villains.length; i++) {
+  //         villains[i].x -= villainSpeed
+  //       }
+  //       if (villains[0].x <= 0) {
+  //         isMove = true
+  //       }
+  //     } else {
+  //       for (let i = 0; i < villains.length; i++) {
+  //         villains[i].x += villainSpeed
+  //       }
+  //       if (villains[villains.length - 1].x >= containerWidth/4) {
+  //       // if (villains[0].x >= 300) {
+  //         isMove = false
+  //       }
+  //     }
+  //     console.log({isMove})
+  //   } catch (error) {
+  //     clearTimeout(intervalTimeOut)
+  //   }
+  // }
+
+  // const moveVillains = () => {
+  //   try {
+  //     let villainSpeed = 0.7
+  //     for (let i = 0; i < villains.length; i++) {
+  //       // villains[i].x += villainSpeed
+  //       console.log("villains[villains.length - 1].x",villains[villains.length - 1].x)
+  //       if (villains[villains.length - 1].x >= containerWidth/2) {
+  //         villains[i].x -= villainSpeed
+  //       } else if (villains[0].x <= 0) {
+  //         villains[i].x += villainSpeed
+  //       }
+  //     }
+  //   } catch (error) {
+  //     clearTimeout(intervalTimeOut)
+  //   }
+  // }
 
   const startAnimation = () => {
     animationFrame = requestAnimationFrame(moveVillains)
