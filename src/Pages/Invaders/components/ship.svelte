@@ -24,7 +24,10 @@
   const moveBullets = () => {
     bullets = bullets.filter((bullet) => bullet.y > 0)
     bullets.forEach((bullet) => (bullet.y -= 5))
+    dispatch("shootEnemy", bullets)
     requestAnimationFrame(moveBullets)
+
+    // console.log("moveBullets",{bullets})
   }
 
   const handleKeyDown = (e) => {
