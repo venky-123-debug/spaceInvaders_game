@@ -18,18 +18,28 @@
   const fireBullet = () => {
     let bullet = { x: spaceShip.getBoundingClientRect().left + spaceShip.offsetWidth / 2.3, y: spaceShip.getBoundingClientRect().top }
     bullets.push(bullet)
-    // dispatch("fireEnemy", bullet)
-    console.log(bullet.x,bullet.y,bullets)
   }
 
+  // const moveBullets = () => {
+  //   bullets = bullets.filter((bullet) => bullet.y > 0)
+  //   bullets.forEach((bullet) => {
+  //     console.log("Bullet y before update:", bullet.y)
+  //     bullet.y -= 5
+  //     console.log("Bullet y after update:", bullet.y)
+  //   })
+  //   dispatch("shootEnemy", bullets)
+  //   requestAnimationFrame(moveBullets)
+  // }
   const moveBullets = () => {
     bullets = bullets.filter((bullet) => bullet.y > 0)
-    bullets.forEach((bullet) => (bullet.y -= 5))
-    // console.log({bullets})
+    bullets.forEach((bullet) => {
+      // console.log("Bullet y before update:", bullet.y)
+      let initialY = bullet.y // Store initial y-position
+      bullet.y -= 5 // Update y-position
+      // console.log("Bullet y after update:", bullet.y)
+      dispatch("shootEnemy", { initialY, bullet,bullets }) // Dispatch object with initial and updated positions
+    })
     requestAnimationFrame(moveBullets)
-    dispatch("shootEnemy", bullets)
-
-    // console.log("moveBullets",{bullets})
   }
 
   const handleKeyDown = (e) => {
@@ -44,7 +54,6 @@
     containerWidth = spaceShip.parentElement.offsetWidth
     requestAnimationFrame(moveBullets)
   })
-  
 </script>
 
 <svelte:window on:keydown|stopPropagation={handleKeyDown} />

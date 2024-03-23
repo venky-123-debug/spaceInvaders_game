@@ -37,7 +37,7 @@
 
   const gameOver = () => {
     if (!isGameOver) {
-      let halfWindowHeight = window.innerHeight / 2
+      let halfWindowHeight = window.innerHeight / 2 - 20
       let lastVillainY = villains[villains.length - 1].y
 
       if (Math.abs(lastVillainY - halfWindowHeight) < 1) {
@@ -121,28 +121,75 @@
     // enemyBullets = enemyBullets.filter((bullet) => bullet.y < window.innerHeight)
   }
 
+  // const checkCollisions = (e) => {
+  //   if (!villains.length) {
+  //     isGameOver = true
+  //     return
+  //   }
+
+  //   let bullets = e.detail
+
+  //   console.log({ bullets })
+  //   for (let i = 0; i < bullets.length; i++) {
+  //     let bullet = bullets[i]
+
+  //     for (let j = 0; j < villains.length; j++) {
+  //       let villain = villains[j]
+
+  //       // Calculate the boundaries of the bullet
+  //       let bulletLeft = bullet.x
+  //       let bulletRight = bullet.x + 3
+  //       let bulletTop = bullet.y
+  //       let bulletBottom = bullet.y + 3
+
+  //       // Calculate the boundaries of the villain
+  //       let villainLeft = villain.x
+  //       let villainRight = villain.x + villainWidth
+  //       let villainTop = villain.y
+  //       let villainBottom = villain.y + villainHeight
+  //       console.log(villain.y, villain.y + villainHeight, villain.y - window.innerHeight, window.innerHeight)
+  //       // Check for collision
+  //       if (bulletRight >= villainLeft && bulletLeft <= villainRight && bulletBottom >= villainTop && bulletTop <= villainBottom) {
+  //         // Collision detected, remove bullet and villain
+  //         bullets.splice(i, 1)
+  //         villains.splice(j, 1)
+  //         i-- // Adjust loop index since we removed an element
+  //         break // Exit inner loop since collision found
+  //       }
+  //     }
+  //   }
+  // }
   const checkCollisions = (e) => {
     if (!villains.length) {
       isGameOver = true
+      return
     }
-    let bullets = e.detail
-    for (let i = 0; i < bullets.length; i++) {
-      let bullet = bullets[i]
 
-      let bulletTop = bullet.y - window.scrollY
-      let bulletHorizontal = bullet.x - window.scrollX
-      for (let j = 0; j < villains.length; j++) {
-        let villain = villains[j]
-        let villainTop = villain.y - window.scrollY
-        let villainHorizontal = villain.x - window.scrollX
-        if (bulletTop == villainTop && villainHorizontal == bulletHorizontal) {
-          // if (bullet.x >= villain.x && bullet.x <= villain.x + villainWidth && bulletTop >= villain.y && bulletTop <= villain.y + villainHeight) {
-          console.log({ i, j })
-          bullets.splice(i, 1)
-          villains.splice(j, 1)
-          // i--
-          break
-        }
+    let { bullet, bullets } = e.detail // Destructure bullet from the event detail
+
+    for (let j = 0; j < villains.length; j++) {
+      let villain = villains[j]
+
+      // Calculate the boundaries of the bullet
+      let bulletLeft = bullet.x
+      let bulletRight = bullet.x + 3
+      let bulletTop = bullet.y
+      let bulletBottom = bullet.y + 3
+
+      // Calculate the boundaries of the villain
+      let villainLeft = villain.x
+      let villainRight = villain.x + villainWidth
+      let villainTop = villain.y
+      let villainBottom = villain.y + villainHeight
+      console.log(Math.abs(bulletRight / 4 / villainLeft) < 1)
+      // console.log(bulletRight / 4, villainLeft, bulletLeft / 4, villainRight, bulletBottom, villainTop, bulletTop, villainBottom)
+      // Check for collision
+      if (Math.abs(bulletRight / 4 / villainLeft) < 1) {
+      // if (bulletRight >= villainLeft && bulletLeft <= villainRight && bulletBottom >= villainTop && bulletTop <= villainBottom) {
+        // Collision detected, remove the bullet
+        let bulletIndex = bullets.indexOf(bullet)
+        bullets.splice(bulletIndex, 1)
+        break // Exit the loop since collision found
       }
     }
   }
