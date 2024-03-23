@@ -2,7 +2,7 @@
   import { onMount, onDestroy, afterUpdate } from "svelte"
   import Player from "./ship.svelte"
   import Enemy from "./villains.svelte"
-    import GameOver from "./gameOver.svelte"
+  import GameOver from "./gameOver.svelte"
 
   let spaceShip
   let gridWidth = 12
@@ -16,6 +16,8 @@
   let bullets = []
   let containerWidth = 0
   let animationFrame
+  let isMove = true
+  let isGameOver = false
 
   onMount(() => {
     containerWidth = window.innerWidth
@@ -26,14 +28,12 @@
     moveVillains()
     startAnimation()
     enemyFireBullets()
-    // checkCollisions()
     gameOver()
   })
 
   onDestroy(() => {
     clearTimeout(intervalTimeOut)
   })
-  let isGameOver = true
 
   const gameOver = () => {
     if (!isGameOver) {
@@ -44,7 +44,6 @@
         isGameOver = true
       }
     }
-    console.log({ isGameOver })
   }
 
   const initializeVillains = () => {
@@ -67,13 +66,8 @@
       console.error(error)
     }
   }
-  let isMove = true
-  let stepDown = false
-
-  $: console.log({ stepDown })
   const moveVillains = async () => {
     try {
-      // let villainSpeed = 1
       let villainSpeed = 0.5
       let downSpeed = 0.05
       if (!isMove) {
@@ -103,7 +97,7 @@
   }
 
   const startEnemyBulletInterval = () => {
-    let interval = 2000
+    let interval = 3000
     intervalTimeOut = setTimeout(() => {
       enemyFireBullets()
       startEnemyBulletInterval()
@@ -113,43 +107,40 @@
   const enemyFireBullets = () => {
     villains.forEach((villain) => {
       let numBullets = Math.floor(Math.random()) + 1
+      // let numBullets = Math.floor(Math.random()) + 1
       for (let i = 0; i < numBullets; i++) {
         if (Math.random() < 0.4) {
           enemyBullets.push({ x: villain.x + villainWidth / 2, y: villain.y + villainHeight })
         }
       }
     })
-  }
+    // enemyBullets.forEach((bullet) => {
+    //   bullet.y += 2
+    // })
 
-  const killEnemy = (e) => {
-    try {
-      let bullet = e.detail
-      let bulletX = bullet.x
-      let bulletY = bullet.y
-
-      for (let i = 0; i < villains.length; i++) {
-        let villain = villains[i]
-        if (bulletY >= villain.y && bulletY <= villain.y + villainHeight && bulletX >= villain.x && bulletX <= villain.x + villainWidth) {
-          villains.splice(i, 1)
-          break
-        }
-      }
-    } catch (error) {
-      console.error(error)
-    }
+    // enemyBullets = enemyBullets.filter((bullet) => bullet.y < window.innerHeight)
   }
 
   const checkCollisions = (e) => {
-    bullets = e.detail
+    if (!villains.length) {
+      isGameOver = true
+    }
+    let bullets = e.detail
     for (let i = 0; i < bullets.length; i++) {
       let bullet = bullets[i]
-      console.log({ bullet })
-      console.log("villain.x", villains[i].y)
+
+      let bulletTop = bullet.y - window.scrollY
+      let bulletHorizontal = bullet.x - window.scrollX
       for (let j = 0; j < villains.length; j++) {
         let villain = villains[j]
-        if (bullet.x >= villain.x && bullet.x <= villain.x + villainWidth && bullet.y >= villain.y && bullet.y <= villain.y + villainHeight) {
+        let villainTop = villain.y - window.scrollY
+        let villainHorizontal = villain.x - window.scrollX
+        if (bulletTop == villainTop && villainHorizontal == bulletHorizontal) {
+          // if (bullet.x >= villain.x && bullet.x <= villain.x + villainWidth && bulletTop >= villain.y && bulletTop <= villain.y + villainHeight) {
+          console.log({ i, j })
           bullets.splice(i, 1)
           villains.splice(j, 1)
+          // i--
           break
         }
       }
@@ -159,21 +150,26 @@
 
 <div class="relative flex h-screen w-screen items-center justify-center overflow-hidden" style="background-image: url('assets/spaceInvaders.jpg');">
   {#if isGameOver}
-    <GameOver on:click={() => {
-      isGameOver=!isGameOver
-    }}/>
+    <GameOver
+      on:click={() => {
+        window.location.reload()
+        setTimeout(() => {
+          isGameOver = !isGameOver
+        }, 50)
+      }}
+    />
   {/if}
   <div class="absolute top-3 left-3 text-2xl text-white">
     <i class="fa-regular fa-user-alien" />
     &nbsp;Space Invaders
   </div>
   <div class="absolute top-16 grid gap-2" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
-    {#each villains as villain, index}
+    {#each villains as villain}
       <Enemy bind:villain />
     {/each}
     {#each enemyBullets as bullet}
       <div class="text-md absolute text-white" style="left: {bullet.x}px; top: {bullet.y}px;"><i class="fa-duotone fa-cloud-bolt" /></div>
     {/each}
   </div>
-  <Player bind:spaceShip on:fireEnemy={(e) => killEnemy(e)} on:shootEnemy={(e) => checkCollisions(e)} />
+  <Player bind:spaceShip on:shootEnemy={(e) => checkCollisions(e)} />
 </div>

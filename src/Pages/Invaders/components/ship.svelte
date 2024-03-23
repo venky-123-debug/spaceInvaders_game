@@ -18,14 +18,16 @@
   const fireBullet = () => {
     let bullet = { x: spaceShip.getBoundingClientRect().left + spaceShip.offsetWidth / 2.3, y: spaceShip.getBoundingClientRect().top }
     bullets.push(bullet)
-    dispatch("fireEnemy", bullet)
+    // dispatch("fireEnemy", bullet)
+    console.log(bullet.x,bullet.y,bullets)
   }
 
   const moveBullets = () => {
     bullets = bullets.filter((bullet) => bullet.y > 0)
     bullets.forEach((bullet) => (bullet.y -= 5))
-    dispatch("shootEnemy", bullets)
+    // console.log({bullets})
     requestAnimationFrame(moveBullets)
+    dispatch("shootEnemy", bullets)
 
     // console.log("moveBullets",{bullets})
   }
