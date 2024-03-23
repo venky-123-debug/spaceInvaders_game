@@ -4,7 +4,7 @@
   import Enemy from "./villains.svelte"
 
   let spaceShip
-  let gridWidth = 10
+  let gridWidth = 15
   let gridHeight = 6
   let villainWidth = 3
   let villainHeight = 3
@@ -14,7 +14,6 @@
   let enemyBullets = []
   let containerWidth = 0
   let animationFrame
-  let enemyBulletFrame
 
   onMount(() => {
     containerWidth = window.innerWidth
@@ -46,13 +45,13 @@
   const moveVillains = () => {
     try {
       let villainSpeed = 0.7
-      
 
       if (!isMove) {
         for (let i = 0; i < villains.length; i++) {
           villains[i].x -= villainSpeed
         }
-        if (villains[0].x <= -containerWidth/4 ) {
+        if (villains[0].x <= -containerWidth / 4) {
+          // villains[i].y += 0.3
           isMove = true
         }
       } else {
@@ -60,6 +59,7 @@
           villains[i].x += villainSpeed
         }
         if (villains[villains.length - 1].x >= containerWidth / 4) {
+          // villains[i].y += 0.3
           isMove = false
         }
       }
@@ -69,58 +69,12 @@
     }
   }
 
-  // const moveVillains = () => {
-  //   try {
-  //     let villainSpeed = 0.7
-  //     // console.log(containerWidth, "containerWidth")
-  //     // console.log(villains[villains.length - 1].x, "villains[villains.length - 1].x")
-  //     // console.log(villains[0].x, "villains[0].x")
-  //     let isMove = true
-  //     if (!isMove) {
-  //       for (let i = 0; i < villains.length; i++) {
-  //         villains[i].x -= villainSpeed
-  //       }
-  //       if (villains[0].x <= 0) {
-  //         isMove = true
-  //       }
-  //     } else {
-  //       for (let i = 0; i < villains.length; i++) {
-  //         villains[i].x += villainSpeed
-  //       }
-  //       if (villains[villains.length - 1].x >= containerWidth/4) {
-  //       // if (villains[0].x >= 300) {
-  //         isMove = false
-  //       }
-  //     }
-  //     console.log({isMove})
-  //   } catch (error) {
-  //     clearTimeout(intervalTimeOut)
-  //   }
-  // }
-
-  // const moveVillains = () => {
-  //   try {
-  //     let villainSpeed = 0.7
-  //     for (let i = 0; i < villains.length; i++) {
-  //       // villains[i].x += villainSpeed
-  //       console.log("villains[villains.length - 1].x",villains[villains.length - 1].x)
-  //       if (villains[villains.length - 1].x >= containerWidth/2) {
-  //         villains[i].x -= villainSpeed
-  //       } else if (villains[0].x <= 0) {
-  //         villains[i].x += villainSpeed
-  //       }
-  //     }
-  //   } catch (error) {
-  //     clearTimeout(intervalTimeOut)
-  //   }
-  // }
-
   const startAnimation = () => {
     animationFrame = requestAnimationFrame(moveVillains)
   }
 
   const startEnemyBulletInterval = () => {
-    let interval = 2000 // Interval set to 2 seconds
+    let interval = 2000
     intervalTimeOut = setTimeout(() => {
       enemyFireBullets()
       startEnemyBulletInterval()
@@ -158,8 +112,12 @@
   }
 </script>
 
-<div class="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-black">
-  <div class="absolute top-10 grid gap-2" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
+<div class="relative flex h-screen w-screen items-center justify-center overflow-hidden" style="background-image: url('assets/spaceInvaders.jpg');">
+  <div class="absolute top-3 left-3 text-lg text-white">
+    <i class="fa-regular fa-user-alien" />
+    &nbsp;Space Invaders
+  </div>
+  <div class="absolute top-14 grid gap-2" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
     {#each villains as villain, index}
       <Enemy bind:villain />
     {/each}
