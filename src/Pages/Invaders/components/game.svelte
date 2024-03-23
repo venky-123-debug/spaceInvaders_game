@@ -4,36 +4,28 @@
   import Enemy from "./villains.svelte"
 
   let spaceShip
-  let gridWidth = 20
-  let gridHeight = 8
-  let villainWidth = 20
-  let villainHeight = 20
+  let gridWidth = 10
+  let gridHeight = 6
+  let villainWidth = 3
+  let villainHeight = 3
   let intervalTimeOut
-
-  let lastFrameTime = 0
 
   let villains = []
   let enemyBullets = []
   let containerWidth = 0
   let animationFrame
-  let emnemyBulletFrame
+  let enemyBulletFrame
 
   onMount(() => {
     containerWidth = window.innerWidth
     initializeVillains()
   })
-  afterUpdate(() => {
-    if (villains) {
-      moveVillains()
-      startAnimation()
-      enemyFireBullets()
-    }
-  })
 
-  $: {
+  afterUpdate(() => {
     moveVillains()
-    startEnemyBulletInterval()
-  }
+    startAnimation()
+    enemyFireBullets()
+  })
 
   onDestroy(() => {
     clearTimeout(intervalTimeOut)
@@ -45,7 +37,6 @@
         villains.push({ x: col * (villainWidth + 10), y: row * (villainHeight + 10) })
       }
     }
-
     villains.forEach((villain) => {
       villain.x = villain.x % containerWidth
     })
@@ -53,10 +44,18 @@
 
   const moveVillains = () => {
     try {
+      let villainSpeed = 0.5
       for (let i = 0; i < villains.length; i++) {
-        villains[i].x = Number(villains[i].x) + 10
-        if (villains[i].x >= containerWidth) {
-          villains[i].x = -villainWidth
+        villains[i].x += villainSpeed
+      }
+     
+
+      for (let i = 0; i < villains.length; i++) {
+        if (villains[villains.length - 1].x >= containerWidth ) {
+          villains[i].x -= villainSpeed
+        }
+        if (villains[0].x <= 0) {
+          villains[i].x -= villainSpeed
         }
       }
     } catch (error) {
@@ -76,58 +75,16 @@
     }, interval)
   }
 
-  // const enemyFireBullets = () => {
-  //   villains.forEach((villain) => {
-  //     // Determine the number of bullets to fire (1 or 2)
-  //     let numBullets = Math.floor(Math.random()) + 1
-  //     console.log({ numBullets })
-  //     for (let i = 0; i < numBullets; i++) {
-  //       if (Math.random() < 0.4) {
-  //         enemyBullets.push({ x: villain.x + villainWidth / 2, y: villain.y + villainHeight })
-  //       }
-  //     }
-  //   })
-
-  //   enemyBullets.forEach((bullet) => {
-  //     bullet.y += 2
-  //   })
-
-  //   enemyBullets = enemyBullets.filter((bullet) => bullet.y < window.innerHeight)
-  // }
-
-//   const enemyFireBullets = () => {
-//     // Clear existing bullets
-//     enemyBullets = []
-
-//     // Shuffle villains array
-//     villains.sort(() => Math.random() - 0.5)
-
-//     // Determine the number of bullets to fire (2 or 3)
-//     let numBulletsToFire = Math.floor(Math.random() * 2) + 2
-
-//     // Select numBulletsToFire villains to shoot bullets
-//     let selectedVillains = villains.slice(0, numBulletsToFire)
-
-//     selectedVillains.forEach((villain) => {
-//         // Fire 2 or 3 bullets from each selected villain
-//         let numBullets = Math.floor(Math.random() * 2) + 2
-
-//         for (let i = 0; i < numBullets; i++) {
-//             if (Math.random() < 0.4) {
-//                 enemyBullets.push({ x: villain.x + villainWidth / 2, y: villain.y + villainHeight })
-//             }
-//         }
-//     })
-
-//     // Move bullets
-//     enemyBullets.forEach((bullet) => {
-//         bullet.y += 2
-//     })
-
-//     // Remove bullets that have gone off-screen
-//     enemyBullets = enemyBullets.filter((bullet) => bullet.y < window.innerHeight)
-// }
-
+  const enemyFireBullets = () => {
+    villains.forEach((villain) => {
+      let numBullets = Math.floor(Math.random()) + 1
+      for (let i = 0; i < numBullets; i++) {
+        if (Math.random() < 0.4) {
+          enemyBullets.push({ x: villain.x + villainWidth / 2, y: villain.y + villainHeight })
+        }
+      }
+    })
+  }
 
   const killEnemy = (event) => {
     let bullet = event.detail
@@ -139,7 +96,6 @@
       let centerY = villains[i].y + villainHeight / 2
 
       let distance = Math.sqrt((bulletX - centerX) ** 2 + (bulletY - centerY) ** 2)
-
       if (Math.abs(bulletY - centerY) < villainHeight / 2) {
         if (distance < (villainWidth + villainHeight) / 2) {
           villains.splice(i, 1)
@@ -152,7 +108,7 @@
 
 <div class="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-black">
   <div class="absolute top-10 grid gap-2" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
-    {#each villains as villain}
+    {#each villains as villain, index}
       <Enemy bind:villain />
     {/each}
     {#each enemyBullets as bullet}

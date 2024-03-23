@@ -31,20 +31,6 @@
     requestAnimationFrame(moveBullets)
   }
 
-  // const moveBullets = () => {
-  //   bullets = bullets.filter((bullet) => bullet.y > 0)
-  //   bullets.forEach((bullet) => {
-  //     let distanceToTop = window.innerHeight - bullet.y; // Distance to top of the screen
-  //       console.log("Distance to top of the screen:", distanceToTop);
-  //     bullet.y -= 5 // Move the bullet upwards
-
-  //     // Calculate the distance moved
-  //     let distanceMoved = distanceFromTop - bullet.y
-  //     console.log("Distance moved by the bullet:", distanceMoved)
-  //   })
-  //   requestAnimationFrame(moveBullets)
-  // }
-
   const handleKeyDown = (e) => {
     if (e.code === "Space") {
       fireBullet()
@@ -57,6 +43,7 @@
     containerWidth = spaceShip.parentElement.offsetWidth
     requestAnimationFrame(moveBullets)
   })
+  
 </script>
 
 <svelte:window on:keydown|stopPropagation={handleKeyDown} />
