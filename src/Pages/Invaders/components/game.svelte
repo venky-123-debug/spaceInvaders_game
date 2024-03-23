@@ -4,7 +4,7 @@
   import Enemy from "./villains.svelte"
 
   let spaceShip
-  let gridWidth = 15
+  let gridWidth = 12
   let gridHeight = 6
   let villainWidth = 3
   let villainHeight = 3
@@ -45,7 +45,6 @@
   const moveVillains = () => {
     try {
       let villainSpeed = 0.7
-
       if (!isMove) {
         for (let i = 0; i < villains.length; i++) {
           villains[i].x -= villainSpeed
@@ -63,7 +62,6 @@
           isMove = false
         }
       }
-      console.log({ isMove })
     } catch (error) {
       clearTimeout(intervalTimeOut)
     }
@@ -96,12 +94,16 @@
     let bullet = event.detail
     let bulletX = bullet.x
     let bulletY = bullet.y
-
+    // console.log("bullet.y", bullet.y - window.innerHeight)
     for (let i = 0; i < villains.length; i++) {
       let centerX = villains[i].x + villainWidth / 2
       let centerY = villains[i].y + villainHeight / 2
-
+      console.log("villains[i].y",villains[i].y)
+      console.log({centerX})
+      console.log({centerY})
       let distance = Math.sqrt((bulletX - centerX) ** 2 + (bulletY - centerY) ** 2)
+      console.log({ distance })
+
       if (Math.abs(bulletY - centerY) < villainHeight / 2) {
         if (distance < (villainWidth + villainHeight) / 2) {
           villains.splice(i, 1)
@@ -113,11 +115,11 @@
 </script>
 
 <div class="relative flex h-screen w-screen items-center justify-center overflow-hidden" style="background-image: url('assets/spaceInvaders.jpg');">
-  <div class="absolute top-3 left-3 text-lg text-white">
+  <div class="absolute top-3 left-3 text-2xl text-white">
     <i class="fa-regular fa-user-alien" />
     &nbsp;Space Invaders
   </div>
-  <div class="absolute top-14 grid gap-2" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
+  <div class="absolute top-16 grid gap-2" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
     {#each villains as villain, index}
       <Enemy bind:villain />
     {/each}

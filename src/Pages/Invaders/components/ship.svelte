@@ -15,14 +15,10 @@
       spaceshipPosition += 10
     }
   }
-  // let distanceFromTop
   const fireBullet = () => {
     let bullet = { x: spaceShip.getBoundingClientRect().left + spaceShip.offsetWidth / 2.3, y: spaceShip.getBoundingClientRect().top }
-    //  distanceFromTop = spaceShip.getBoundingClientRect().top // Calculate distance from the top of the screen
     bullets.push(bullet)
-    // console.log({ distanceFromTop })
     dispatch("fireEnemy", bullet)
-    // dispatch("fireEnemy", { bullet, distanceFromTop })
   }
 
   const moveBullets = () => {
@@ -48,7 +44,7 @@
 
 <svelte:window on:keydown|stopPropagation={handleKeyDown} />
 <div bind:this={spaceShip} class="absolute bottom-10" style="left: {spaceshipPosition}px;">
-  <i class="fa-solid fa-ufo text-5xl text-white" />
+  <i class="fa-solid fa-ufo-beam text-5xl text-white" />
   <!-- <i class="fa-duotone fa-starfighter text-5xl text-white" /> -->
 </div>
 
