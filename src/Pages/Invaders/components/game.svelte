@@ -160,39 +160,38 @@
   //   }
   // }
   const checkCollisions = (e) => {
-    if (!villains.length) {
-      isGameOver = true
-      return
-    }
+  if (!villains.length) {
+    isGameOver = true
+    return
+  }
 
-    let { bullet, bullets } = e.detail // Destructure bullet from the event detail
+  let { bullet,bullets } = e.detail // Destructure bullet from the event detail
 
-    for (let j = 0; j < villains.length; j++) {
-      let villain = villains[j]
+  for (let j = 0; j < villains.length; j++) {
+    let villain = villains[j]
 
-      // Calculate the boundaries of the bullet
-      let bulletLeft = bullet.x
-      let bulletRight = bullet.x + 3
-      let bulletTop = bullet.y
-      let bulletBottom = bullet.y + 3
+    // Calculate the boundaries of the bullet
+    let bulletLeft = bullet.x
+    let bulletRight = bullet.x + 3
+    let bulletTop = bullet.y
+    let bulletBottom = bullet.y + 3
 
-      // Calculate the boundaries of the villain
-      let villainLeft = villain.x
-      let villainRight = villain.x + villainWidth
-      let villainTop = villain.y
-      let villainBottom = villain.y + villainHeight
-      console.log(Math.abs(bulletRight / 4 / villainLeft) < 1)
-      // console.log(bulletRight / 4, villainLeft, bulletLeft / 4, villainRight, bulletBottom, villainTop, bulletTop, villainBottom)
-      // Check for collision
-      if (Math.abs(bulletRight / 4 / villainLeft) < 1) {
-      // if (bulletRight >= villainLeft && bulletLeft <= villainRight && bulletBottom >= villainTop && bulletTop <= villainBottom) {
-        // Collision detected, remove the bullet
-        let bulletIndex = bullets.indexOf(bullet)
-        bullets.splice(bulletIndex, 1)
-        break // Exit the loop since collision found
-      }
+    // Calculate the boundaries of the villain
+    let villainLeft = villain.x
+    let villainRight = villain.x + villainWidth
+    let villainTop = villain.y
+    let villainBottom = villain.y + villainHeight
+// console.log(Math.abs(bulletRight-villainLeft) < 1)
+console.log(bulletLeft /4, villainLeft, bulletRight /4, villainRight , bulletBottom , villainTop, bulletTop , villainBottom)
+    // Check for collision
+    if (bulletRight >= villainLeft && bulletLeft <= villainRight && bulletBottom >= villainTop && bulletTop <= villainBottom) {
+      // Collision detected, remove the bullet
+      let bulletIndex = bullets.indexOf(bullet);
+      bullets.splice(bulletIndex, 1);
+      break; // Exit the loop since collision found
     }
   }
+}
 </script>
 
 <div class="relative flex h-screen w-screen items-center justify-center overflow-hidden" style="background-image: url('assets/spaceInvaders.jpg');">
