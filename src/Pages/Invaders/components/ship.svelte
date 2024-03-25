@@ -5,7 +5,7 @@
   const dispatch = createEventDispatcher()
 
   let containerWidth = 0
-  let spaceshipPosition = 0
+  export let spaceshipPosition = 0
   let bullets = []
 
   const moveShip = (e) => {
@@ -13,7 +13,7 @@
       spaceshipPosition -= 1
     } else if (e.code === "ArrowRight" && spaceshipPosition < 96) {
       spaceshipPosition += 1
-      console.log(spaceshipPosition);
+      console.log(spaceshipPosition)
     }
   }
   const fireBullet = () => {
@@ -21,16 +21,15 @@
     bullets.push(bullet)
   }
 
- 
   const moveBullets = () => {
     bullets = bullets.filter((bullet) => bullet.y > 0)
     bullets.forEach((bullet) => {
       // console.log("Bullet y before update:", bullet.y)
       let bulletX = bullet.x
-      bullet.y -= 2 
-      let initialY = bullet.y 
+      bullet.y -= 2
+      let initialY = bullet.y
       // console.log("Bullet y after update:", bullet.y)
-      dispatch("shootEnemy", { initialY,bulletX, bullet,bullets }) // Dispatch object with initial and updated positions
+      dispatch("shootEnemy", { initialY, bulletX, bullet, bullets }) // Dispatch object with initial and updated positions
     })
     requestAnimationFrame(moveBullets)
   }

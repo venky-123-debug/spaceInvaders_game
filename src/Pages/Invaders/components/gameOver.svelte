@@ -21,7 +21,7 @@
   </div>
   <section class="text-gray-600 body-font">
     <div class="container px-5 py-24 mx-auto border border-transparent">
-      <div class="xl:w-1/2  w-full mx-auto text-center font-mono text-5xl ">
+      <div class="w-full mx-auto text-center font-mono text-5xl ">
         Game Over
         <div class="py-4  text-lg text-white">
          Your Score is : {score}

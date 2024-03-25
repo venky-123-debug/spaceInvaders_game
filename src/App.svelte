@@ -9,4 +9,8 @@
   @tailwind base;
   @tailwind components;
   @tailwind utilities;
+
+  body {
+    font-family: "Star Wars", sans-serif;
+  }
 </style>

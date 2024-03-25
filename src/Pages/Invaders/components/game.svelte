@@ -15,26 +15,33 @@
   let villains = []
   let enemyBullets = []
   let containerWidth = 0
-  let animationFrame
+  // let animationFrame
   let isMove = true
   let isGameOver = false
   let score = 0
+  let bulletTimer
+  let spaceshipPosition
+  let fallCount = 3
 
   onMount(() => {
     containerWidth = window.innerWidth
     initializeVillains()
     startEnemyFireLoop()
+    enemyBulletCollision()
+
+    if (!isGameOver) {
+      fireEnemyBullet()
+    }
   })
 
   afterUpdate(() => {
     moveVillains()
     startAnimation()
     gameOver()
-    
   })
 
   onDestroy(() => {
-    clearTimeout(intervalTimeOut)
+    clearTimeout(intervalTimeOut, bulletTimer)
   })
 
   const gameOver = () => {
@@ -64,9 +71,10 @@
       console.error(error)
     }
   }
+
   const moveVillains = async () => {
     try {
-      let villainSpeed = 0.01
+      let villainSpeed = 0.2
       if (!isMove) {
         for (let i = 0; i < villains.length; i++) {
           villains[i].x -= villainSpeed
@@ -90,7 +98,7 @@
   }
 
   const startAnimation = () => {
-    animationFrame = requestAnimationFrame(moveVillains)
+    // animationFrame = requestAnimationFrame(moveVillains)
   }
 
   const checkCollisions = (e) => {
@@ -126,27 +134,44 @@
   }
   const downEnemyBullets = () => {
     for (let i = 0; i < enemyBullets.length; i++) {
-      enemyBullets[i].y += 30
+      enemyBullets[i].y += 0.5
     }
   }
   const startEnemyFireLoop = () => {
-    downEnemyBullets()
     intervalTimeOut = setInterval(() => {
-      // requestAnimationFrame(downEnemyBullets)
-      if (!isGameOver) {
-        fireEnemyBullet()
-      }
-    }, 1000)
+      downEnemyBullets()
+    }, 15)
+  }
+  const fireEnemyBullet = () => {
+    bulletTimer = setInterval(() => {
+      let randomVillainIndex = Math.floor(Math.random() * villains.length)
+      let randomVillain = villains[randomVillainIndex]
+      let bullet = { x: randomVillain.x + villainWidth / 2, y: randomVillain.y + villainHeight }
+      enemyBullets = [...enemyBullets, bullet]
+    }, 1500)
   }
 
-  const fireEnemyBullet = () => {
-    let randomVillainIndex = Math.floor(Math.random() * villains.length)
-    let randomVillain = villains[randomVillainIndex]
-    let bullet = { x: randomVillain.x + villainWidth / 2, y: randomVillain.y + villainHeight }
-    // bullet.y += 5
-    enemyBullets = [...enemyBullets, bullet]
-    // console.log({enemyBullets})
+  let foundMatch = false
+  let timer
+  const enemyBulletCollision = () => {
+    bulletTimer = setInterval(() => {
+      for (let i = 0; i < enemyBullets.length; i++) {
+        console.log("for")
+        if (fallCount === 0) {
+          isGameOver = true
+          clearInterval(bulletTimer)
+          return
+        }
+
+        let distanceRatio = Math.abs(enemyBullets[i].x / spaceshipPosition)
+        if (distanceRatio >= 0.99 && distanceRatio <= 1.1) {
+          enemyBullets = enemyBullets.filter((ene) => ene.x != enemyBullets[i].x)
+            fallCount--
+        }
+      }
+    }, 200)
   }
+
 </script>
 
 <div class="relative h-screen w-screen overflow-hidden">
@@ -161,13 +186,19 @@
       }}
     />
   {/if}
+  <div class="absolute right-2 bottom-2 flex gap-3 text-2xl text-red-500">
+    {#each Array(fallCount) as arr}
+      <span><i class="fa-solid fa-wave-pulse" /></span>
+    {/each}
+  </div>
   <CanvasScreen />
-  <div class="absolute bottom-3 left-3 text-2xl text-white">
+  <div class="absolute top-3 left-5 text-2xl text-white">
     <i class="fa-regular fa-user-alien" />
     &nbsp;Space Invaders
   </div>
-  <div class="absolute bottom-3 right-3 text-2xl text-white">
-    <i class="fa-regular fa-user-alien" />
+  <div class="absolute top-3 right-5 text-2xl text-white">
+    <!-- <i class="fa-regular fa-user-alien" /> -->
+    <i class="fa-sharp fa-regular fa-square-kanban" />
     &nbsp;Score&nbsp;{score ? score : "000"}
   </div>
   <div class="grid pt-24" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
@@ -180,6 +211,7 @@
   </div>
   <Player
     bind:spaceShip
+    bind:spaceshipPosition
     on:shootEnemy={(e) => {
       checkCollisions(e)
     }}
