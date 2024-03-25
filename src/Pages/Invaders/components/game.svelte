@@ -4,6 +4,7 @@
   import Enemy from "./villains.svelte"
   import GameOver from "./gameOver.svelte"
   import CanvasScreen from "./canvasScreen.svelte"
+  import StartPage from "./startPage.svelte"
 
   let spaceShip
   let gridWidth = 12
@@ -22,8 +23,12 @@
   let bulletTimer
   let spaceshipPosition
   let fallCount = 3
+  let startPage = true
 
   onMount(() => {
+    if (!startPage) {
+      startAction()
+    }
     containerWidth = window.innerWidth
     initializeVillains()
     startEnemyFireLoop()
@@ -35,9 +40,11 @@
   })
 
   afterUpdate(() => {
-    moveVillains()
-    startAnimation()
-    gameOver()
+    if (!startPage || !isGameOver) {
+      moveVillains()
+      startAnimation()
+      gameOver()
+    }
   })
 
   onDestroy(() => {
@@ -45,9 +52,11 @@
   })
 
   const gameOver = () => {
+    let lastVillainY
     if (!isGameOver) {
-      let lastVillainY = villains[villains.length - 1].y
-
+      if (villains.length) {
+        lastVillainY = villains[villains.length - 1].y
+      }
       if (lastVillainY >= 85) {
         isGameOver = true
       }
@@ -72,9 +81,31 @@
     }
   }
 
+  let villainSpeed = 0
+  let enemyBulletTimer = 0
+  const startAction = (e) => {
+    console.log(e.detail, "detail")
+    startPage = false
+
+    if (e.detail == "Easy") {
+      villainSpeed = 0.2
+      enemyBulletTimer = 1500
+    }
+    if (e.detail == "Medium") {
+      villainSpeed = 0.4
+      enemyBulletTimer = 1000
+    }
+    if (e.detail == "Hard") {
+      {
+        villainSpeed = 0.6
+        enemyBulletTimer = 500
+      }
+    }
+  }
+
   const moveVillains = async () => {
     try {
-      let villainSpeed = 0.2
+      // let villainSpeed = 0.2
       if (!isMove) {
         for (let i = 0; i < villains.length; i++) {
           villains[i].x -= villainSpeed
@@ -150,9 +181,6 @@
       enemyBullets = [...enemyBullets, bullet]
     }, 1500)
   }
-
-  let foundMatch = false
-  let timer
   const enemyBulletCollision = () => {
     bulletTimer = setInterval(() => {
       for (let i = 0; i < enemyBullets.length; i++) {
@@ -166,55 +194,62 @@
         let distanceRatio = Math.abs(enemyBullets[i].x / spaceshipPosition)
         if (distanceRatio >= 0.99 && distanceRatio <= 1.1) {
           enemyBullets = enemyBullets.filter((ene) => ene.x != enemyBullets[i].x)
-            fallCount--
+          fallCount--
         }
       }
     }, 200)
   }
-
 </script>
 
-<div class="relative h-screen w-screen overflow-hidden">
-  {#if isGameOver}
-    <GameOver
-      {score}
-      on:click={() => {
-        window.location.reload()
-        setTimeout(() => {
-          isGameOver = !isGameOver
-        }, 50)
+{#if startPage}
+  <StartPage on:start={startAction} />
+{:else}
+  <div class="relative h-screen w-screen overflow-hidden">
+    {#if isGameOver}
+      <GameOver
+        {score}
+        on:Close={() => {
+          window.location.reload()
+        }}
+        on:click={() => {
+          initializeVillains()
+
+          setTimeout(() => {
+            isGameOver = !isGameOver
+          }, 50)
+        }}
+      />
+    {/if}
+
+    <CanvasScreen />
+    <div class="absolute top-3 left-5 text-2xl text-white">
+      <!-- <i class="fa-regular fa-user-alien" /> -->
+      Space Invaders
+    </div>
+    <div class="absolute top-3 right-5 text-2xl text-white">
+      <!-- <i class="fa-regular fa-user-alien" /> -->
+      <!-- <i class="fa-sharp fa-regular fa-square-kanban" /> -->
+      Score{score ? score : "000"}
+    </div>
+    <div class="absolute right-5 top-12 flex animate-pulse gap-3 text-2xl text-white">
+      {#each Array(fallCount) as arr}
+        <span><i class="fa-solid fa-wave-pulse" /></span>
+      {/each}
+    </div>
+    <div class="grid pt-24" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
+      {#each villains as villain}
+        <Enemy bind:villain />
+      {/each}
+      {#each enemyBullets as bullet}
+        <div class="absolute text-xl text-white" style="left: {bullet.x}%; top: {bullet.y}%;"><i class="fa-solid fa-cloud-bolt" /></div>
+      {/each}
+    </div>
+    <Player
+      bind:spaceShip
+      bind:spaceshipPosition
+      on:shootEnemy={(e) => {
+        checkCollisions(e)
       }}
     />
-  {/if}
-  
-  <CanvasScreen />
-  <div class="absolute top-3 left-5 text-2xl text-white">
-    <!-- <i class="fa-regular fa-user-alien" /> -->
-    Space Invaders
   </div>
-  <div class="absolute top-3 right-5 text-2xl text-white">
-    <!-- <i class="fa-regular fa-user-alien" /> -->
-    <!-- <i class="fa-sharp fa-regular fa-square-kanban" /> -->
-    Score{score ? score : "000"}
-  </div>
-  <div class="absolute right-5 top-12 flex gap-3 text-2xl text-white animate-pulse">
-    {#each Array(fallCount) as arr}
-      <span><i class="fa-solid fa-wave-pulse" /></span>
-    {/each}
-  </div>
-  <div class="grid pt-24" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
-    {#each villains as villain}
-      <Enemy bind:villain />
-    {/each}
-    {#each enemyBullets as bullet}
-      <div class="absolute text-xl text-white" style="left: {bullet.x}%; top: {bullet.y}%;"><i class="fa-solid fa-cloud-bolt" /></div>
-    {/each}
-  </div>
-  <Player
-    bind:spaceShip
-    bind:spaceshipPosition
-    on:shootEnemy={(e) => {
-      checkCollisions(e)
-    }}
-  />
-</div>
+{/if}

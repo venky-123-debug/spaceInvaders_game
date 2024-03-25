@@ -48,7 +48,7 @@
   })
 </script>
 
-<svelte:window on:keydown|stopPropagation={handleKeyDown} />
+<svelte:window on:keydown|stopPropagation|preventDefault={handleKeyDown} />
 <div bind:this={spaceShip} class="absolute bottom-10" style="left: {spaceshipPosition}%;">
   <i class="fa-solid fa-ufo-beam text-5xl text-white" />
   <!-- <i class="fa-duotone fa-starfighter text-5xl text-white" /> -->
