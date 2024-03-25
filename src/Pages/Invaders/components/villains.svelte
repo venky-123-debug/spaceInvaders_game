@@ -4,10 +4,7 @@
   export let y = villain.y
 
   $: x = villain.x
-  $: y = villain.y
-  // $: {
-  //   console.log(villain.x, villain.y)
-  // }
+  $: y = villain.y+5
 </script>
 
 <div class="absolute text-xl text-red-500 " style="left: {x}%; top: {y}%;">

@@ -17,7 +17,7 @@
   </div>
   <section class="text-gray-600 body-font">
     <div class="container px-5 py-24 mx-auto border border-transparent">
-      <div class="xl:w-1/2 lg:w-3/4 w-full mx-auto text-center font-mono text-5xl ">
+      <div class="xl:w-1/2  w-full mx-auto text-center font-mono text-5xl ">
         Game Over
         <p class="leading-relaxed text-lg">Play Again ?</p>
         <span class="inline-block h-1 w-10 rounded bg-indigo-500 mt-8 mb-6"></span>
