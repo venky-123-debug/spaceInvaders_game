@@ -1,5 +1,5 @@
 module.exports = {
-  port: 6000,
+  port: 5500,
   directory: "public",
   spa: "index.html",
   logFormat: "dev"

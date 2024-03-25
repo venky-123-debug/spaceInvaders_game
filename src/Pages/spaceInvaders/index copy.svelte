@@ -155,6 +155,9 @@
     game.player = new Player(game.canvas.width / 2 - 50, game.canvas.height - 50, 20, 20, "#0099CC", game.canvas.width)
 
     game.asteroids = []
+    for (let i = 0; i < game.noOfAsteroids; i++) {
+      game.asteroids.push(new Asteroid(game.asteroidsSpace + i * game.asteroidsSpace, game.canvas.height - 180, 5, 5, "#ffffff", game.asteroidsParts))
+    }
 
     game.enemies = []
     for (let i = 0; i < game.enemyLines; i++) {
@@ -287,6 +290,15 @@
 </script>
 
 <svelte:window on:keydown|stopPropagation={keydown} />
-<div class="flex w-screen h-screen m-auto overflow-hidden items-center justify-center">
+<div class="">
   <canvas id="canvas" width="800" height="600" />
 </div>
+
+<!-- <script>
+  import Game from "./components/mainGame.svelte";
+</script>
+
+<div class="flex items-center justify-center h-screen">
+  <Game />
+</div>
+ -->

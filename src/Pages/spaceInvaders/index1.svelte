@@ -152,14 +152,14 @@
 
     game.interval = setInterval(game.update, 1000 / 60)
 
-    game.player = new Player(game.canvas.width / 2 - 50, game.canvas.height - 50, 20, 20, "#0099CC", game.canvas.width)
+    game.player = new Player(game.canvas.width / 2 - 50, game.canvas.height - 50, 20, 20, "#49b80d", game.canvas.width)
 
     game.asteroids = []
 
     game.enemies = []
     for (let i = 0; i < game.enemyLines; i++) {
       for (let j = 0; j < game.enemiesEachLine; j++) {
-        game.enemies.push(new SpaceShip(game.enemySpace + j * game.enemySpace, game.enemySpace + i * game.enemySpace, 20, 20, "#FF0000"))
+        game.enemies.push(new SpaceShip(game.enemySpace + j * game.enemySpace, game.enemySpace + i * game.enemySpace, 20, 20, "#1aa3e8"))
       }
     }
   }
@@ -180,7 +180,7 @@
       game.enemies[i].update(game.enemyDirection, 0)
     }
 
-    if (game.enemies.length == 0) {
+    if (!game.enemies.length) {
       game.restart()
     }
 
@@ -287,6 +287,9 @@
 </script>
 
 <svelte:window on:keydown|stopPropagation={keydown} />
-<div class="flex w-screen h-screen m-auto overflow-hidden items-center justify-center">
+<div class="flex relative w-screen h-screen m-auto overflow-hidden items-center justify-center">
   <canvas id="canvas" width="800" height="600" />
+  <!-- <div bind:this={game.player} class="absolute bottom-10">
+    <i class="fa-solid fa-ufo-beam text-5xl text-white" />
+  </div> -->
 </div>
