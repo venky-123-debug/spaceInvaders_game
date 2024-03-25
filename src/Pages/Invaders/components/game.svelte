@@ -37,10 +37,9 @@
 
   const gameOver = () => {
     if (!isGameOver) {
-      let halfWindowHeight = window.innerHeight / 2 - 20
       let lastVillainY = villains[villains.length - 1].y
 
-      if (Math.abs(lastVillainY - halfWindowHeight) < 1) {
+      if (lastVillainY >= 85) {
         isGameOver = true
       }
     }
@@ -49,18 +48,19 @@
   const initializeVillains = () => {
     for (let row = 0; row < gridHeight; row++) {
       for (let col = 0; col < gridWidth; col++) {
-        villains.push({ x: col * (villainWidth + 10), y: row * (villainHeight + 10) })
+        villains.push({ x: col * (villainWidth), y: row * (villainHeight + 2),icon:0 })
       }
     }
-    villains.forEach((villain) => {
-      villain.x = villain.x % containerWidth
-    })
+    // villains.forEach((villain) => {
+    //   villain.x = villain.x % containerWidth
+    // })
+    console.log(villains);
   }
 
   const downAliens = async (downSpeed) => {
     try {
       for (let i = 0; i < villains.length; i++) {
-        villains[i].y += downSpeed
+        villains[i].y += villainHeight + 2
       }
     } catch (error) {
       console.error(error)
@@ -68,22 +68,24 @@
   }
   const moveVillains = async () => {
     try {
-      let villainSpeed = 0.5
+      let villainSpeed = 0.1
       let downSpeed = 0.05
       if (!isMove) {
         for (let i = 0; i < villains.length; i++) {
           villains[i].x -= villainSpeed
         }
-        downAliens(downSpeed)
-        if (villains[0].x <= -containerWidth / 4) {
+        // if (villains[0].x <= -containerWidth / 4) {
+          if (villains[0].x < 0 ) {
+          downAliens(downSpeed)
           isMove = true
         }
       } else {
         for (let i = 0; i < villains.length; i++) {
           villains[i].x += villainSpeed
         }
-        downAliens(downSpeed)
-        if (villains[villains.length - 1].x >= containerWidth / 4) {
+        if (villains[villains.length - 1].x >=  100) {
+          downAliens(downSpeed)
+        // if (villains[villains.length - 1].x >= containerWidth / 4) {
           isMove = false
         }
       }
@@ -129,7 +131,7 @@
 
     let { bullet, bullets } = e.detail
 
-    console.log("e.detail",e.detail)
+    // console.log("e.detail",e.detail)
 
     for (let j = 0; j < villains.length; j++) {
       let villain = villains[j]
@@ -145,9 +147,13 @@
       let villainRight = villain.x + villainWidth
       let villainTop = villain.y
       let villainBottom = villain.y + villainHeight
-      if (bulletRight >= villainLeft && bulletLeft <= villainRight && bulletBottom >= villainTop && bulletTop <= villainBottom) {
+      console.log(bulletLeft,bulletTop,villainLeft,villainRight,villainTop,villainBottom);
+
+      if (bulletLeft >= villainLeft && bulletLeft <= villainRight && bulletTop >= villainTop && bulletTop <= villainBottom && villain.icon == 0 ) {
+        console.log("matched");
+        villain.icon = 1
         bullets.splice(bullets.indexOf(bullet), 1)
-        bullets.splice(villain, 1)
+        // villains.splice(villain, 1)
         break
       }
     }
@@ -169,13 +175,15 @@
     <i class="fa-regular fa-user-alien" />
     &nbsp;Space Invaders
   </div>
-  <div class="absolute top-16 grid gap-2" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
+  <div class="grid px-10" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
     {#each villains as villain}
       <Enemy bind:villain />
     {/each}
-    {#each enemyBullets as bullet}
+    <!-- {#each enemyBullets as bullet}
       <div class="text-md absolute text-white" style="left: {bullet.x}px; top: {bullet.y}px;"><i class="fa-duotone fa-cloud-bolt" /></div>
-    {/each}
+    {/each} -->
   </div>
-  <Player bind:spaceShip on:shootEnemy={(e) => checkCollisions(e)} />
+  <Player bind:spaceShip on:shootEnemy={(e) => {
+    checkCollisions(e)
+  }} />
 </div>

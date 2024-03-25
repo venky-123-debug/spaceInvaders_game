@@ -10,6 +10,8 @@
   // }
 </script>
 
-<div class="relative text-lg text-red-500" style="left: {x}px; top: {y}px;">
+<div class="absolute text-xl text-red-500 " style="left: {x}%; top: {y}%;">
+  {#if villain.icon == 0}
   <i class="fa-solid fa-alien-8bit" />
+  {/if}
 </div>
