@@ -189,15 +189,15 @@
   
   <CanvasScreen />
   <div class="absolute top-3 left-5 text-2xl text-white">
-    <i class="fa-regular fa-user-alien" />
-    &nbsp;Space Invaders
+    <!-- <i class="fa-regular fa-user-alien" /> -->
+    Space Invaders
   </div>
   <div class="absolute top-3 right-5 text-2xl text-white">
     <!-- <i class="fa-regular fa-user-alien" /> -->
-    <i class="fa-sharp fa-regular fa-square-kanban" />
-    &nbsp;Score&nbsp;{score ? score : "000"}
+    <!-- <i class="fa-sharp fa-regular fa-square-kanban" /> -->
+    Score{score ? score : "000"}
   </div>
-  <div class="absolute right-5 top-12 flex gap-3 text-2xl text-red-500 animate-pulse">
+  <div class="absolute right-5 top-12 flex gap-3 text-2xl text-white animate-pulse">
     {#each Array(fallCount) as arr}
       <span><i class="fa-solid fa-wave-pulse" /></span>
     {/each}

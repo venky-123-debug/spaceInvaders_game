@@ -11,6 +11,6 @@
   @tailwind utilities;
 
   body {
-    font-family: "Star Wars", sans-serif;
-  }
+    font-family: 'Press Start 2P';font-size: 10px;
+}
 </style>
