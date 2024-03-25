@@ -186,11 +186,7 @@
       }}
     />
   {/if}
-  <div class="absolute right-2 bottom-2 flex gap-3 text-2xl text-red-500">
-    {#each Array(fallCount) as arr}
-      <span><i class="fa-solid fa-wave-pulse" /></span>
-    {/each}
-  </div>
+  
   <CanvasScreen />
   <div class="absolute top-3 left-5 text-2xl text-white">
     <i class="fa-regular fa-user-alien" />
@@ -200,6 +196,11 @@
     <!-- <i class="fa-regular fa-user-alien" /> -->
     <i class="fa-sharp fa-regular fa-square-kanban" />
     &nbsp;Score&nbsp;{score ? score : "000"}
+  </div>
+  <div class="absolute right-5 top-12 flex gap-3 text-2xl text-red-500 animate-pulse">
+    {#each Array(fallCount) as arr}
+      <span><i class="fa-solid fa-wave-pulse" /></span>
+    {/each}
   </div>
   <div class="grid pt-24" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
     {#each villains as villain}

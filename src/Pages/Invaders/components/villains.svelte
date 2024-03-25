@@ -4,11 +4,11 @@
   export let y = villain.y
 
   $: x = villain.x
-  $: y = villain.y+5
+  $: y = villain.y +8
 </script>
 
-<div class="absolute text-xl text-red-500 " style="left: {x}%; top: {y}%;">
+<div class="absolute text-xl text-red-500" style="left: {x}%; top: {y}%;">
   {#if villain.icon == 0}
-  <i class="fa-solid fa-alien-8bit" />
+    <i class="fa-solid fa-alien-8bit" />
   {/if}
 </div>
