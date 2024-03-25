@@ -17,7 +17,7 @@
   let containerWidth = 0
   let animationFrame
   let isMove = true
-  let isGameOver = true
+  let isGameOver = false
   let score = 0
 
   onMount(() => {
@@ -30,6 +30,7 @@
     moveVillains()
     startAnimation()
     gameOver()
+    
   })
 
   onDestroy(() => {
@@ -65,7 +66,7 @@
   }
   const moveVillains = async () => {
     try {
-      let villainSpeed = 0.001
+      let villainSpeed = 0.01
       if (!isMove) {
         for (let i = 0; i < villains.length; i++) {
           villains[i].x -= villainSpeed
@@ -95,9 +96,7 @@
   const checkCollisions = (e) => {
     let { bullet, bullets } = e.detail
 
-    // Assume all villains are destroyed initially
     let allVillainsDestroyed = true
-
     for (let j = 0; j < villains.length; j++) {
       let villain = villains[j]
 
@@ -109,7 +108,7 @@
       let villainBottom = villain.y + villainHeight
 
       if (bulletLeft >= villainLeft && bulletLeft <= villainRight && bulletTop >= villainTop && bulletTop <= villainBottom && villain.icon === 0) {
-        console.log("matched")
+        // console.log("matched")
         score += 100
         villain.icon = 1
         bullets.splice(bullets.indexOf(bullet), 1)
@@ -125,9 +124,15 @@
       isGameOver = true
     }
   }
-
+  const downEnemyBullets = () => {
+    for (let i = 0; i < enemyBullets.length; i++) {
+      enemyBullets[i].y += 30
+    }
+  }
   const startEnemyFireLoop = () => {
+    downEnemyBullets()
     intervalTimeOut = setInterval(() => {
+      // requestAnimationFrame(downEnemyBullets)
       if (!isGameOver) {
         fireEnemyBullet()
       }
@@ -135,21 +140,19 @@
   }
 
   const fireEnemyBullet = () => {
-    // Select a random villain to fire a bullet
     let randomVillainIndex = Math.floor(Math.random() * villains.length)
     let randomVillain = villains[randomVillainIndex]
-
-    // Fire a bullet from the selected villain
     let bullet = { x: randomVillain.x + villainWidth / 2, y: randomVillain.y + villainHeight }
-    bullet.y -= 5
+    // bullet.y += 5
     enemyBullets = [...enemyBullets, bullet]
-    console.log({ enemyBullets })
+    // console.log({enemyBullets})
   }
 </script>
 
 <div class="relative h-screen w-screen overflow-hidden">
   {#if isGameOver}
     <GameOver
+      {score}
       on:click={() => {
         window.location.reload()
         setTimeout(() => {
@@ -172,7 +175,7 @@
       <Enemy bind:villain />
     {/each}
     {#each enemyBullets as bullet}
-      <div class="text-md text-white" style="left: {bullet.x}%; top: {bullet.y}%;"><i class="fa-duotone fa-cloud-bolt" /></div>
+      <div class="absolute text-xl text-white" style="left: {bullet.x}%; top: {bullet.y}%;"><i class="fa-solid fa-cloud-bolt" /></div>
     {/each}
   </div>
   <Player
