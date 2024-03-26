@@ -1,13 +1,13 @@
 <script>
   import { onMount, onDestroy, afterUpdate } from "svelte"
-  import Player from "./ship.svelte"
-  import Enemy from "./villains.svelte"
-  import GameOver from "./gameOver.svelte"
+  import Player from "../shared/ship.svelte"
+  import Enemy from "../shared/villains.svelte"
+  import GameOver from "../shared/gameOver.svelte"
   import CanvasScreen from "./canvasScreen.svelte"
   import StartPage from "./startPage.svelte"
-  import Boost from "./boost.svelte"
-  import Life from "./life.svelte"
-  import EnemyBullet from "./enemyBullet.svelte"
+  import Boost from "../shared/boost.svelte"
+  import Life from "../shared/life.svelte"
+  import EnemyBullet from "../shared/enemyBullet.svelte"
 
   let spaceShip
   let gridWidth = 12
