@@ -2,11 +2,12 @@
   import { onMount, createEventDispatcher } from "svelte"
 
   export let spaceShip
+  export let spaceshipPosition = 0
+  export let spaceshipPositionY = 90
+  export let booster = false
   const dispatch = createEventDispatcher()
 
   let containerWidth = 0
-  export let spaceshipPosition = 0
-  export let spaceshipPositionY = 90
   let bullets = []
 
   const moveShip = (e) => {
@@ -50,9 +51,10 @@
 </script>
 
 <svelte:window on:keydown|stopPropagation|preventDefault={handleKeyDown} />
-<div bind:this={spaceShip} class="absolute " style="left: {spaceshipPosition}%;top:{spaceshipPositionY}%;">
-  <i class="fa-solid fa-ufo-beam text-5xl text-white" />
-  <!-- <i class="fa-duotone fa-starfighter text-5xl text-white" /> -->
+<div bind:this={spaceShip} class="absolute" style="left: {spaceshipPosition}%;top:{spaceshipPositionY}%;">
+  <div class="p-3 border-2 {booster ? ' border-red-600' : ' border-transparent'}">
+    <i class="fa-solid fa-ufo-beam text-5xl text-white" />
+  </div>
 </div>
 
 {#each bullets as bullet}

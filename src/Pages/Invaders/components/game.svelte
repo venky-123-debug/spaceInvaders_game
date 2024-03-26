@@ -5,6 +5,7 @@
   import GameOver from "./gameOver.svelte"
   import CanvasScreen from "./canvasScreen.svelte"
   import StartPage from "./startPage.svelte"
+  import Boost from "./boost.svelte"
 
   let spaceShip
   let gridWidth = 12
@@ -27,6 +28,7 @@
   let fallCount = 3
   let startPage = true
   let villainColor
+  let booster = false
 
   let enemyColorArray = ["#ea580c", "#15803d", "#0891b2", "#db2777", "#e11d48"]
 
@@ -47,11 +49,12 @@
   })
 
   afterUpdate(() => {
+    handleBooster()
     if (!startPage || !isGameOver) {
-      let checkIcon = (currentValue) => currentValue == 1
+      // let checkIcon = (currentValue) => currentValue == 1
 
       // console.log(villains.every(checkIcon))
-      // }
+      //}
       moveVillains()
       startAnimation()
       gameOver()
@@ -61,6 +64,14 @@
   onDestroy(() => {
     clearTimeout(intervalTimeOut, bulletTimer)
   })
+
+  const handleBooster = () => {
+    if (booster) {
+      setTimeout(() => {
+        booster = false
+      }, 1000)
+    }
+  }
 
   const gameOver = () => {
     let lastVillainY
@@ -99,16 +110,13 @@
 
     if (e.detail == "Easy") {
       villainSpeed = 0.2
-      // enemyBulletTimer = 1500
     }
     if (e.detail == "Medium") {
       villainSpeed = 0.4
-      // enemyBulletTimer = 1000
     }
     if (e.detail == "Hard") {
       {
         villainSpeed = 0.6
-        // enemyBulletTimer = 500
       }
     }
   }
@@ -210,9 +218,8 @@
         let ratioY = Math.abs(enemyBullets[i].y / spaceshipPositionY)
         // console.log({ ratioY })
         if (distanceRatio >= 0.98 && distanceRatio <= 1.12 && ratioY <= 1 && ratioY >= 0.9) {
-          console.log()
           enemyBullets = enemyBullets.filter((ene) => ene.x != enemyBullets[i].x)
-          fallCount--
+          if (!booster) fallCount--
         }
       }
     }, 200)
@@ -254,9 +261,8 @@
     <div class="absolute right-5 bottom-5 flex animate-pulse gap-3 text-2xl text-blue-500">
       {#each Array(fallCount) as arr}
         <span><i class="fa-solid fa-wave-pulse" /></span>
-      {/each}<span class="text-white">
-        Life
-      </span>
+      {/each}
+      <span class="text-white">Life</span>
     </div>
     <div class="grid pt-24" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
       {#each villains as villain}
@@ -265,11 +271,13 @@
       {#each enemyBullets as bullet}
         <div class="absolute text-xl text-red-500" style="left: {bullet.x}%; top: {bullet.y}%;">
           <!-- <i class="fa-solid fa-cloud-bolt" /> -->
-          <i class="fa-solid fa-knife-kitchen -rotate-45 " />
+          <i class="fa-solid fa-knife-kitchen -rotate-45" />
         </div>
       {/each}
     </div>
+    <Boost bind:booster />
     <Player
+      bind:booster
       bind:spaceShip
       bind:spaceshipPosition
       bind:spaceshipPositionY
