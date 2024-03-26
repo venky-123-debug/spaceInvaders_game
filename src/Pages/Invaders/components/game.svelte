@@ -6,6 +6,7 @@
   import CanvasScreen from "./canvasScreen.svelte"
   import StartPage from "./startPage.svelte"
   import Boost from "./boost.svelte"
+  import Life from "./life.svelte"
 
   let spaceShip
   let gridWidth = 12
@@ -17,7 +18,6 @@
   let villains = []
   let enemyBullets = []
   let containerWidth = 0
-  // let animationFrame
   let isMove = true
   let isGameOver = false
   let isPlayerWon = false
@@ -30,13 +30,11 @@
   let villainColor
   let booster = false
   let boostCount = 3
-
   let enemyColorArray = ["#ea580c", "#15803d", "#0891b2", "#db2777", "#e11d48"]
 
   onMount(() => {
     containerWidth = window.innerWidth
     villainColor = enemyColorArray[Math.floor(Math.random() * enemyColorArray.length)]
-    console.log({ villainColor })
     if (!startPage) {
       startAction()
     } else {
@@ -226,6 +224,22 @@
       }
     }, 200)
   }
+
+  const gameRestart = () => {
+    setTimeout(() => {
+      if (isPlayerWon) {
+        isPlayerWon = !isPlayerWon
+      } else isGameOver = !isGameOver
+      villains = []
+      initializeVillains()
+      fallCount = 3
+      boostCount = 3
+    }, 50)
+    initializeVillains()
+  }
+  const gameClose = () => {
+    window.location.reload()
+  }
 </script>
 
 {#if startPage}
@@ -233,26 +247,7 @@
 {:else}
   <div class="relative h-screen w-screen overflow-hidden">
     {#if isGameOver || isPlayerWon}
-      <GameOver
-        {score}
-        bind:isGameOver
-        bind:isPlayerWon
-        on:Close={() => {
-          window.location.reload()
-        }}
-        on:click={() => {
-          setTimeout(() => {
-            if (isPlayerWon) {
-              isPlayerWon = !isPlayerWon
-            } else isGameOver = !isGameOver
-            villains = []
-            initializeVillains()
-            fallCount = 3
-            boostCount = 3
-          }, 50)
-          initializeVillains()
-        }}
-      />
+      <GameOver {score} bind:isGameOver bind:isPlayerWon on:Close={gameClose} on:click={gameRestart} />
     {/if}
 
     <CanvasScreen />
@@ -265,7 +260,7 @@
     </div>
     <div class="absolute right-5 bottom-5 flex animate-pulse gap-3 text-2xl text-blue-500">
       {#each Array(fallCount) as arr}
-        <span><i class="fa-solid fa-wave-pulse" /></span>
+        <Life />
       {/each}
       <span class="text-white">Life</span>
     </div>
