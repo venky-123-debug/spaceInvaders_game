@@ -5,7 +5,7 @@
   import GameOver from "../shared/gameOver.svelte"
   import CanvasScreen from "./canvasScreen.svelte"
   import StartPage from "./startPage.svelte"
-  import Boost from "../shared/boost.svelte"
+  import Boost from "../shared/shield.svelte"
   import Life from "../shared/life.svelte"
   import EnemyBullet from "../shared/enemyBullet.svelte"
 
@@ -51,10 +51,6 @@
   afterUpdate(() => {
     handleBooster()
     if (!startPage || !isGameOver) {
-      // let checkIcon = (currentValue) => currentValue == 1
-
-      // console.log(villains.every(checkIcon))
-      //}
       moveVillains()
       startAnimation()
       gameOver()
@@ -66,7 +62,6 @@
   })
 
   const handleBooster = () => {
-    // if (score > 1000) booster = true
     if (booster) {
       setTimeout(() => {
         booster = false
@@ -105,7 +100,6 @@
   }
 
   let villainSpeed = 0
-  // let enemyBulletTimer = 0
   const startAction = (e) => {
     startPage = false
 
@@ -116,9 +110,7 @@
       villainSpeed = 0.4
     }
     if (e.detail == "Hard") {
-      {
-        villainSpeed = 0.6
-      }
+      villainSpeed = 0.6
     }
   }
 
@@ -158,7 +150,6 @@
 
     for (let j = 0; j < villains.length; j++) {
       let villain = villains[j]
-
       let bulletLeft = bullet.x
       let bulletTop = bullet.y
       let villainLeft = villain.x
@@ -167,7 +158,6 @@
       let villainBottom = villain.y + villainHeight
 
       if (bulletLeft >= villainLeft && bulletLeft <= villainRight && bulletTop >= villainTop && bulletTop <= villainBottom && villain.icon === 0) {
-        // console.log("matched")
         score += 100
         villain.icon = 1
         bullets.splice(bullets.indexOf(bullet), 1)
@@ -203,7 +193,6 @@
         let randomVillain = villains[randomVillainIndex]
         let bullet = { x: randomVillain.x, y: randomVillain.y }
         enemyBullets = [...enemyBullets, bullet]
-        // console.log({ enemyBullets })
       }, 1500)
     }
   }
@@ -217,8 +206,7 @@
         }
         let distanceRatio = Math.abs(enemyBullets[i].x / spaceshipPosition)
         let ratioY = Math.abs(enemyBullets[i].y / spaceshipPositionY)
-        // console.log({ ratioY })
-        if (distanceRatio >= 0.98 && distanceRatio <= 1.12 && ratioY <= 1 && ratioY >= 0.9) {
+        if (distanceRatio >= 0.98 && distanceRatio <= 1.1 && ratioY <= 1 && ratioY >= 0.9) {
           enemyBullets = enemyBullets.filter((ene) => ene.x != enemyBullets[i].x)
           if (!booster) fallCount--
         }
@@ -274,6 +262,7 @@
       {/each}
     </div>
     <Boost bind:booster bind:boostCount />
+
     <Player
       bind:booster
       bind:spaceShip
