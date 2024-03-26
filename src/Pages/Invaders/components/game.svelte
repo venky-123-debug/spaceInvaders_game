@@ -31,6 +31,8 @@
   let villainColor
   let shield = false
   let shieldCount = 3
+  let villainSpeed = 0
+
   let enemyColorArray = ["#ea580c", "#15803d", "#0891b2", "#db2777", "#e11d48"]
 
   onMount(() => {
@@ -80,6 +82,19 @@
       }
     }
   }
+  const startAction = (e) => {
+    startPage = false
+
+    if (e.detail == "Easy") {
+      villainSpeed = 0.2
+    }
+    if (e.detail == "Medium") {
+      villainSpeed = 0.4
+    }
+    if (e.detail == "Hard") {
+      villainSpeed = 0.6
+    }
+  }
 
   const initializeVillains = () => {
     for (let row = 0; row < gridHeight; row++) {
@@ -92,25 +107,10 @@
   const downAliens = async () => {
     try {
       for (let i = 0; i < villains.length; i++) {
-        villains[i].y += villainHeight + 2
+        villains[i].y += villainHeight
       }
     } catch (error) {
       console.error(error)
-    }
-  }
-
-  let villainSpeed = 0
-  const startAction = (e) => {
-    startPage = false
-
-    if (e.detail == "Easy") {
-      villainSpeed = 0.2
-    }
-    if (e.detail == "Medium") {
-      villainSpeed = 0.4
-    }
-    if (e.detail == "Hard") {
-      villainSpeed = 0.6
     }
   }
 
@@ -223,6 +223,7 @@
       initializeVillains()
       fallCount = 3
       shieldCount = 3
+      score = 0
     }, 50)
     initializeVillains()
   }
