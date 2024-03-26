@@ -7,6 +7,7 @@
   import StartPage from "./startPage.svelte"
   import Boost from "./boost.svelte"
   import Life from "./life.svelte"
+  import EnemyBullet from "./enemyBullet.svelte"
 
   let spaceShip
   let gridWidth = 12
@@ -269,10 +270,7 @@
         <Enemy bind:villain bind:villainColor />
       {/each}
       {#each enemyBullets as bullet}
-        <div class="absolute text-xl text-red-500" style="left: {bullet.x}%; top: {bullet.y}%;">
-          <!-- <i class="fa-solid fa-cloud-bolt" /> -->
-          <i class="fa-solid fa-knife-kitchen -rotate-45" />
-        </div>
+        <EnemyBullet bind:bullet />
       {/each}
     </div>
     <Boost bind:booster bind:boostCount />
