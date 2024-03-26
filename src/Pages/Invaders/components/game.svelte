@@ -181,7 +181,7 @@
     }
 
     if (allVillainsDestroyed) {
-      isGameOver = true
+      isPlayerWon = true
     }
   }
   const downEnemyBullets = () => {
@@ -242,7 +242,9 @@
         }}
         on:click={() => {
           setTimeout(() => {
-            isGameOver = !isGameOver
+            if (isPlayerWon) {
+              isPlayerWon = !isPlayerWon
+            } else isGameOver = !isGameOver
             villains = []
             initializeVillains()
             fallCount = 3
@@ -280,7 +282,7 @@
     </div>
     <Boost bind:booster bind:boostCount />
     <Player
-    bind:booster
+      bind:booster
       bind:spaceShip
       bind:spaceshipPosition
       bind:spaceshipPositionY
