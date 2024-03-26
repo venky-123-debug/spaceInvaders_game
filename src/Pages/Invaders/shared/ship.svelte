@@ -4,7 +4,7 @@
   export let spaceShip
   export let spaceshipPosition = 0
   export let spaceshipPositionY = 89
-  export let booster = false
+  export let shield = false
   const dispatch = createEventDispatcher()
 
   let containerWidth = 0
@@ -53,7 +53,7 @@
 <svelte:window on:keydown|stopPropagation|preventDefault={handleKeyDown} />
 
 <div bind:this={spaceShip} class="absolute" style="left: {spaceshipPosition}%;top:{spaceshipPositionY}%;">
-  <div class="border-2 p-3 rounded-md {booster ? ' border-red-600' : ' border-transparent'} ">
+  <div class="border-2 p-3 rounded-md {shield ? ' border-red-600' : ' border-transparent'} ">
     <i class="fa-solid fa-jet-fighter-up text-4xl text-white"></i>
   </div>
 </div>

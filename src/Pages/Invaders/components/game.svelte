@@ -29,8 +29,8 @@
   let fallCount = 3
   let startPage = true
   let villainColor
-  let booster = false
-  let boostCount = 3
+  let shield = false
+  let shieldCount = 3
   let enemyColorArray = ["#ea580c", "#15803d", "#0891b2", "#db2777", "#e11d48"]
 
   onMount(() => {
@@ -49,7 +49,7 @@
   })
 
   afterUpdate(() => {
-    handleBooster()
+    handleShield()
     if (!startPage || !isGameOver) {
       moveVillains()
       startAnimation()
@@ -61,10 +61,10 @@
     clearTimeout(intervalTimeOut, bulletTimer)
   })
 
-  const handleBooster = () => {
-    if (booster) {
+  const handleShield = () => {
+    if (shield) {
       setTimeout(() => {
-        booster = false
+        shield = false
       }, 5000)
     }
   }
@@ -184,7 +184,7 @@
     }, 15)
   }
   const fireEnemyBullet = () => {
-    if (!startPage || !isGameOver || isPlayerWon) {
+    if (startPage || !isGameOver || isPlayerWon) {
       let randomVillainIndex
       bulletTimer = setInterval(() => {
         for (let i = 0; i < villains.length; i++) {
@@ -208,7 +208,7 @@
         let ratioY = Math.abs(enemyBullets[i].y / spaceshipPositionY)
         if (distanceRatio >= 0.98 && distanceRatio <= 1.1 && ratioY <= 1 && ratioY >= 0.9) {
           enemyBullets = enemyBullets.filter((ene) => ene.x != enemyBullets[i].x)
-          if (!booster) fallCount--
+          if (!shield) fallCount--
         }
       }
     }, 200)
@@ -222,11 +222,11 @@
       villains = []
       initializeVillains()
       fallCount = 3
-      boostCount = 3
+      shieldCount = 3
     }, 50)
     initializeVillains()
   }
-  
+
   const gameClose = () => {
     window.location.reload()
   }
@@ -262,10 +262,10 @@
         <EnemyBullet bind:bullet />
       {/each}
     </div>
-    <Boost bind:booster bind:boostCount />
+    <Boost bind:shield bind:shieldCount />
 
     <Player
-      bind:booster
+      bind:shield
       bind:spaceShip
       bind:spaceshipPosition
       bind:spaceshipPositionY
