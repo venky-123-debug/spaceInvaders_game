@@ -3,7 +3,7 @@
 
   export let spaceShip
   export let spaceshipPosition = 0
-  export let spaceshipPositionY = 90
+  export let spaceshipPositionY = 89
   export let booster = false
   const dispatch = createEventDispatcher()
 
@@ -19,7 +19,7 @@
     }
   }
   const fireBullet = () => {
-    let bullet = { x: spaceshipPosition + 1.3, y: 88 }
+    let bullet = { x: spaceshipPosition + 2.5, y: 90 }
     bullets.push(bullet)
   }
 
@@ -51,9 +51,10 @@
 </script>
 
 <svelte:window on:keydown|stopPropagation|preventDefault={handleKeyDown} />
+
 <div bind:this={spaceShip} class="absolute" style="left: {spaceshipPosition}%;top:{spaceshipPositionY}%;">
-  <div class="p-3 border-2 {booster ? ' border-red-600' : ' border-transparent'}">
-    <i class="fa-solid fa-ufo-beam text-5xl text-white" />
+  <div class="border-2 p-3 rounded-md {booster ? ' border-red-600' : ' border-transparent'} ">
+    <i class="fa-solid fa-jet-fighter-up text-4xl text-white"></i>
   </div>
 </div>
 

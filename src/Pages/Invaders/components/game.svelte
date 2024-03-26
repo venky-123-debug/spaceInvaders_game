@@ -29,6 +29,7 @@
   let startPage = true
   let villainColor
   let booster = false
+  let boostCount = 3
 
   let enemyColorArray = ["#ea580c", "#15803d", "#0891b2", "#db2777", "#e11d48"]
 
@@ -66,10 +67,11 @@
   })
 
   const handleBooster = () => {
+    // if (score > 1000) booster = true
     if (booster) {
       setTimeout(() => {
         booster = false
-      }, 1000)
+      }, 5000)
     }
   }
 
@@ -79,7 +81,7 @@
       if (villains.length) {
         lastVillainY = villains[villains.length - 1].y
       }
-      if (lastVillainY >= 85) {
+      if (lastVillainY >= 80) {
         isGameOver = true
       }
     }
@@ -244,6 +246,7 @@
             villains = []
             initializeVillains()
             fallCount = 3
+            boostCount = 3
           }, 50)
           initializeVillains()
         }}
@@ -275,9 +278,9 @@
         </div>
       {/each}
     </div>
-    <Boost bind:booster />
+    <Boost bind:booster bind:boostCount />
     <Player
-      bind:booster
+    bind:booster
       bind:spaceShip
       bind:spaceshipPosition
       bind:spaceshipPositionY
