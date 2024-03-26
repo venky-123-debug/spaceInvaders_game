@@ -209,7 +209,7 @@
         let distanceRatio = Math.abs(enemyBullets[i].x / spaceshipPosition)
         let ratioY = Math.abs(enemyBullets[i].y / spaceshipPositionY)
         // console.log({ ratioY })
-        if (distanceRatio >= 0.99 && distanceRatio <= 1.1 && ratioY <= 1 && ratioY >= 0.9) {
+        if (distanceRatio >= 0.98 && distanceRatio <= 1.12 && ratioY <= 1 && ratioY >= 0.9) {
           console.log()
           enemyBullets = enemyBullets.filter((ene) => ene.x != enemyBullets[i].x)
           fallCount--
