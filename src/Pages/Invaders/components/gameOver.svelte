@@ -2,6 +2,8 @@
   import { createEventDispatcher } from "svelte"
   const dispatch = createEventDispatcher()
   export let score = 0
+  export let isGameOver= false
+  export let isPlayerWon= false
 </script>
 
 <div class="fixed inset-0 z-20 flex h-full flex-col items-center justify-center gap-3 bg-black backdrop-blur-md">
@@ -23,7 +25,11 @@
   <section class="body-font text-gray-600">
     <div class="container mx-auto border border-transparent px-5 py-24">
       <div class="mx-auto w-full text-center font-mono text-5xl">
+        {#if isGameOver}
         Game Over
+        {:else if isPlayerWon}
+        You Won!
+        {/if}
         <div class="py-4 text-lg text-white">
           Your Score is : {score}
         </div>

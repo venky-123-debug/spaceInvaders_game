@@ -19,28 +19,39 @@
   // let animationFrame
   let isMove = true
   let isGameOver = false
+  let isPlayerWon = false
   let score = 0
   let bulletTimer
   let spaceshipPosition
+  let spaceshipPositionY
   let fallCount = 3
   let startPage = true
+  let villainColor
+
+  let enemyColorArray = ["#ea580c", "#15803d", "#0891b2", "#db2777", "#e11d48"]
 
   onMount(() => {
+    containerWidth = window.innerWidth
+    villainColor = enemyColorArray[Math.floor(Math.random() * enemyColorArray.length)]
+    console.log({ villainColor })
     if (!startPage) {
       startAction()
-    }
-    containerWidth = window.innerWidth
-    initializeVillains()
-    startEnemyFireLoop()
-    enemyBulletCollision()
-
-    if (!isGameOver) {
-      fireEnemyBullet()
+    } else {
+      if (!isGameOver) {
+        fireEnemyBullet()
+      }
+      initializeVillains()
+      startEnemyFireLoop()
+      enemyBulletCollision()
     }
   })
 
   afterUpdate(() => {
     if (!startPage || !isGameOver) {
+      let checkIcon = (currentValue) => currentValue == 1
+
+      // console.log(villains.every(checkIcon))
+      // }
       moveVillains()
       startAnimation()
       gameOver()
@@ -82,23 +93,22 @@
   }
 
   let villainSpeed = 0
-  let enemyBulletTimer = 0
+  // let enemyBulletTimer = 0
   const startAction = (e) => {
-    console.log(e.detail, "detail")
     startPage = false
 
     if (e.detail == "Easy") {
       villainSpeed = 0.2
-      enemyBulletTimer = 1500
+      // enemyBulletTimer = 1500
     }
     if (e.detail == "Medium") {
       villainSpeed = 0.4
-      enemyBulletTimer = 1000
+      // enemyBulletTimer = 1000
     }
     if (e.detail == "Hard") {
       {
         villainSpeed = 0.6
-        enemyBulletTimer = 500
+        // enemyBulletTimer = 500
       }
     }
   }
@@ -136,6 +146,7 @@
     let { bullet, bullets } = e.detail
 
     let allVillainsDestroyed = true
+
     for (let j = 0; j < villains.length; j++) {
       let villain = villains[j]
 
@@ -174,25 +185,32 @@
     }, 15)
   }
   const fireEnemyBullet = () => {
-    bulletTimer = setInterval(() => {
-      let randomVillainIndex = Math.floor(Math.random() * villains.length)
-      let randomVillain = villains[randomVillainIndex]
-      let bullet = { x: randomVillain.x + villainWidth / 2, y: randomVillain.y + villainHeight }
-      enemyBullets = [...enemyBullets, bullet]
-    }, 1500)
+    if (!startPage || !isGameOver || isPlayerWon) {
+      let randomVillainIndex
+      bulletTimer = setInterval(() => {
+        for (let i = 0; i < villains.length; i++) {
+          if (villains[i].icon == 0) randomVillainIndex = Math.floor(Math.random() * villains.length)
+        }
+        let randomVillain = villains[randomVillainIndex]
+        let bullet = { x: randomVillain.x, y: randomVillain.y }
+        enemyBullets = [...enemyBullets, bullet]
+        // console.log({ enemyBullets })
+      }, 1500)
+    }
   }
   const enemyBulletCollision = () => {
     bulletTimer = setInterval(() => {
       for (let i = 0; i < enemyBullets.length; i++) {
-        console.log("for")
         if (fallCount === 0) {
           isGameOver = true
           clearInterval(bulletTimer)
           return
         }
-
         let distanceRatio = Math.abs(enemyBullets[i].x / spaceshipPosition)
-        if (distanceRatio >= 0.99 && distanceRatio <= 1.1) {
+        let ratioY = Math.abs(enemyBullets[i].y / spaceshipPositionY)
+        // console.log({ ratioY })
+        if (distanceRatio >= 0.99 && distanceRatio <= 1.1 && ratioY <= 1 && ratioY >= 0.9) {
+          console.log()
           enemyBullets = enemyBullets.filter((ene) => ene.x != enemyBullets[i].x)
           fallCount--
         }
@@ -205,18 +223,22 @@
   <StartPage on:start={startAction} />
 {:else}
   <div class="relative h-screen w-screen overflow-hidden">
-    {#if isGameOver}
+    {#if isGameOver || isPlayerWon}
       <GameOver
         {score}
+        bind:isGameOver
+        bind:isPlayerWon
         on:Close={() => {
           window.location.reload()
         }}
         on:click={() => {
-          initializeVillains()
-
           setTimeout(() => {
             isGameOver = !isGameOver
+            villains = []
+            initializeVillains()
+            fallCount = 3
           }, 50)
+          initializeVillains()
         }}
       />
     {/if}
@@ -224,29 +246,33 @@
     <CanvasScreen />
     <div class="absolute top-3 left-5 text-2xl text-white">
       <!-- <i class="fa-regular fa-user-alien" /> -->
-      Space Invaders
+      Space Adventure
     </div>
     <div class="absolute top-3 right-5 text-2xl text-white">
-      <!-- <i class="fa-regular fa-user-alien" /> -->
-      <!-- <i class="fa-sharp fa-regular fa-square-kanban" /> -->
-      Score{score ? score : "000"}
+      Score&nbsp;{score ? score : "000"}
     </div>
-    <div class="absolute right-5 top-12 flex animate-pulse gap-3 text-2xl text-white">
+    <div class="absolute right-5 bottom-5 flex animate-pulse gap-3 text-2xl text-blue-500">
       {#each Array(fallCount) as arr}
         <span><i class="fa-solid fa-wave-pulse" /></span>
-      {/each}
+      {/each}<span class="text-white">
+        Life
+      </span>
     </div>
     <div class="grid pt-24" style="grid-template-columns: {`repeat(${gridWidth}, 1fr)`}">
       {#each villains as villain}
-        <Enemy bind:villain />
+        <Enemy bind:villain bind:villainColor />
       {/each}
       {#each enemyBullets as bullet}
-        <div class="absolute text-xl text-white" style="left: {bullet.x}%; top: {bullet.y}%;"><i class="fa-solid fa-cloud-bolt" /></div>
+        <div class="absolute text-xl text-red-500" style="left: {bullet.x}%; top: {bullet.y}%;">
+          <!-- <i class="fa-solid fa-cloud-bolt" /> -->
+          <i class="fa-solid fa-knife-kitchen -rotate-45 " />
+        </div>
       {/each}
     </div>
     <Player
       bind:spaceShip
       bind:spaceshipPosition
+      bind:spaceshipPositionY
       on:shootEnemy={(e) => {
         checkCollisions(e)
       }}

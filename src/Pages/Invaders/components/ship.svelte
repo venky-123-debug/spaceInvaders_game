@@ -6,6 +6,7 @@
 
   let containerWidth = 0
   export let spaceshipPosition = 0
+  export let spaceshipPositionY = 90
   let bullets = []
 
   const moveShip = (e) => {
@@ -49,7 +50,7 @@
 </script>
 
 <svelte:window on:keydown|stopPropagation|preventDefault={handleKeyDown} />
-<div bind:this={spaceShip} class="absolute bottom-10" style="left: {spaceshipPosition}%;">
+<div bind:this={spaceShip} class="absolute " style="left: {spaceshipPosition}%;top:{spaceshipPositionY}%;">
   <i class="fa-solid fa-ufo-beam text-5xl text-white" />
   <!-- <i class="fa-duotone fa-starfighter text-5xl text-white" /> -->
 </div>

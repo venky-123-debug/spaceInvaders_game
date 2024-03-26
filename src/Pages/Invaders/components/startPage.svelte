@@ -41,9 +41,11 @@
         <div class="flex items-center justify-center gap-2">
           <div class="w-1/2">
             <div class="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-5xl font-bold leading-snug tracking-wider text-transparent">Space Adventure</div>
-            <div class="pt-10 text-xl font-bold tracking-wider text-white">No 1 Arcade Game</div>
+            <!-- <div class="pt-10 text-xl font-bold tracking-wider text-white">No 1 Arcade Game</div> -->
           </div>
-          <div class="w-1/2" />
+          <div class="w-1/2">
+            <!-- <i class="fa-sharp fa-solid fa-alien-8bit ml-20 bg-gradient-to-r from-orange-800 to-cyan-600 bg-clip-text text-7xl text-transparent" /> -->
+          </div>
         </div>
 
         <span class="isolate flex w-full items-center justify-center rounded-md pt-24 text-center shadow-sm">
@@ -78,7 +80,7 @@
         <div class="flex items-center justify-center">
           <button on:click={dispatchEvent} type="button" class="mt-10 flex h-9 min-h-full min-w-[36px] items-center justify-center px-3 py-1.5 text-xl font-medium text-white">
             <span class="select-none">
-              press <span class="animate-pulse bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">SPACE</span>
+              press <span class="animate-pulse bg-gradient-to-r from-lime-600 to-yellow-500 bg-clip-text text-transparent">SPACE</span>
               to start
             </span>
           </button>
