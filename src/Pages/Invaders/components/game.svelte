@@ -226,6 +226,7 @@
     }, 50)
     initializeVillains()
   }
+  
   const gameClose = () => {
     window.location.reload()
   }
