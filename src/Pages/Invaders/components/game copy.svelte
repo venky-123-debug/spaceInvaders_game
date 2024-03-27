@@ -1,5 +1,6 @@
 <script>
   import { onMount, onDestroy, afterUpdate } from "svelte"
+  import { Midi } from "@tonejs/midi"
   import * as Tone from "tone"
   import Player from "../shared/ship.svelte"
   import Enemy from "../shared/villains.svelte"
@@ -39,22 +40,111 @@
   let mainVillainY = 10
   let enableMainVillain = false
   // let toneAutoStart = false
+  let player
+  let hiddenButton
 
   let enemyColorArray = ["#ea580c", "#15803d", "#0891b2", "#db2777", "#e11d48"]
 
-  let player = new Tone.Player({
-    url: "assets/bgm.mp3",
-    autostart: true,
-    loop: true,
-  }).toDestination()
-  const startToneAudio = () => {
-    Tone.start()
-    player.start()
-  }
-  onMount(() => {
-    if (!startPage && !isPlayerWon) {
-      startToneAudio()
+  const loadMidiFromUrl = async (url) => {
+    try {
+      let response = await fetch(url)
+      let arrayBuffer = await response.arrayBuffer()
+
+      let midi = new Midi(arrayBuffer)
+      let json = midi.toJSON()
+
+      return json
+    } catch (error) {
+      console.error("Error loading MIDI file:", error)
+      return null
     }
+  }
+
+  // const loadTone = async () => {
+  //   try {
+  //     let midiUrl = "assets/gameBgm.mid"
+  //     let midiJson = await loadMidiFromUrl(midiUrl)
+  //     console.log({ midiJson })
+  //     if (midiJson) {
+  //       let newUrl = "data:audio/midi;base64," + btoa(JSON.stringify(midiJson))
+  //       console.log({ newUrl })
+  //       player = new Tone.Player({
+  //         url: newUrl,
+  //         autostart: true,
+  //         loop: true,
+  //       }).toDestination()
+  //       console.log({ player })
+  //       if (Tone.context.state !== "running") {
+  //         await Tone.start()
+  //       }
+  //       // player.start()
+  //     } else {
+  //       console.error("Failed to load MIDI file.")
+  //     }
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
+
+  const loadTone = async () => {
+    try {
+      let midiUrl = "assets/gameBgm.mid"
+      let midiJson = await loadMidiFromUrl(midiUrl)
+      console.log({ midiJson })
+
+      if (midiJson) {
+        let newUrl = "data:audio/midi;base64," + btoa(JSON.stringify(midiJson))
+        console.log({ newUrl })
+
+        // Create a Tone.js Player instance
+        player = new Tone.Player({
+          url: newUrl,
+          autostart: true,
+          loop: true,
+        }).toDestination()
+
+        // Start the audio context if needed
+        if (Tone.context.state !== "running") {
+          await Tone.start()
+        }
+      } else {
+        console.error("Failed to load MIDI file.")
+      }
+    } catch (error) {
+      console.error("Error loading and playing MIDI file:", error)
+    }
+  }
+
+  const startToneAudio = () => {
+    if (player && !player.state === "started") {
+      player.start()
+    }
+  }
+
+  const startAudioPlayback = () => {
+    startToneAudio()
+  }
+
+  // let player = new Tone.Player({
+  //   url: "assets/gameBgm.mid",
+  //   // url: "assets/bgm.mp3",
+  //   autostart: true,
+  //   loop: true,
+  // }).toDestination()
+
+  // const startToneAudio = () => {
+  //   Tone.start()
+  //   player.start()
+  // }
+  onMount(async () => {
+    // startAudioPlayback()
+    console.log({ hiddenButton })
+    hiddenButton.addEventListener("click", startToneAudio)
+    // hiddenButton.addEventListener("click", startAudioPlayback)
+    await loadTone()
+    // if (!startPage && !isPlayerWon) {
+    //   startToneAudio()
+    // }
     containerWidth = window.innerWidth
     assignRandomColorToVillain()
     if (!startPage) {
@@ -265,6 +355,8 @@
   //   console.log(player.mute,player )
   // }
 </script>
+
+<button bind:this={hiddenButton} type="button" class="hidden">Start Audio</button>
 
 {#if startPage}
   <StartPage on:start={startAction} />
