@@ -226,6 +226,25 @@
       }, 1500)
     }
   }
+
+  const initiateEnemySound = async (url) => {
+    // Initialize Tone.js if it hasn't been started yet
+    if (!Tone.context.state === "running") {
+      await Tone.start()
+    }
+
+    let bulletSound = new Tone.Player({
+      url: url,
+      // url: "assets/gun.mp3",
+      autostart: true,
+      onload: () => {
+        bulletSound.toDestination().start()
+        // setTimeout(() => {
+        //   bulletSound.stop()
+        // }, 500)
+      },
+    })
+  }
   const enemyBulletCollision = () => {
     bulletTimer = setInterval(() => {
       for (let i = 0; i < enemyBullets.length; i++) {
@@ -239,6 +258,9 @@
         if (distanceRatio >= 0.98 && distanceRatio <= 1.1 && ratioY <= 1 && ratioY >= 0.9) {
           enemyBullets = enemyBullets.filter((ene) => ene.x != enemyBullets[i].x)
           if (!shield) fallCount--
+          if (!startPage && !isPlayerWon) {
+            initiateEnemySound("assets/hitError.mp3")
+          }
         }
       }
     }, 200)
@@ -306,6 +328,8 @@
       bind:spaceShip
       bind:spaceshipPosition
       bind:spaceshipPositionY
+      bind:isPlayerWon
+      bind:startPage
       on:shootEnemy={(e) => {
         checkCollisions(e)
       }}

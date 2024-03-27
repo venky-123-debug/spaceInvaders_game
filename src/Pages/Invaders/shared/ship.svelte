@@ -9,12 +9,12 @@
   export let spaceshipPositionY = 89
   export let shield = false
   export let startPage = false
-  export let isPlayerWon= false
+  export let isPlayerWon = false
 
   let containerWidth = 0
   let bullets = []
-  let keyDownStartTime
-  let keyDownEndTime
+  // let keyDownStartTime
+  // let keyDownEndTime
 
   const moveShip = (e) => {
     if (e.code === "ArrowLeft" && spaceshipPosition > 0) {
@@ -43,10 +43,15 @@
     if (e.code === "Space") {
       // keyDownStartTime = Date.now()
       // console.log({keyDownStartTime})
-    if(!startPage && !isPlayerWon)  initiateSound()
-      fireBullet()
+      if (!startPage && !isPlayerWon) {
+        initiateSound()
+        fireBullet()
+      }
     }
     moveShip(e)
+  }
+  $: {
+    console.log({ startPage, isPlayerWon })
   }
 
   // const handleKeyUp = (e) => {
