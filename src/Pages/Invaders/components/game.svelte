@@ -128,11 +128,7 @@
       }
     }
   }
-  const initializeMainVillain = () => {
-    if (enableMainVillain) {
-      mainVillain = { x: mainVillainX, y: mainVillainY }
-    }
-  }
+ 
 
   const downAliens = async () => {
     try {
@@ -141,6 +137,34 @@
       }
     } catch (error) {
       console.error(error)
+    }
+  }
+  const initializeMainVillain = () => {
+    if (enableMainVillain) {
+      mainVillain = { x: mainVillainX, y: mainVillainY }
+    }
+  }
+  
+  const moveMainVillain = async () => {
+    try {
+      let canMove = false
+      if (!canMove) {        
+        mainVillain.x -= villainSpeed
+        if (mainVillain.x-20 < 0) {
+          mainVillain.y += villainHeight
+          canMove = true
+        }
+      } else {
+        mainVillain.x += villainSpeed  
+        if (mainVillain.x+30 >= 100) {
+          mainVillain.y += villainHeight
+
+          canMove = false
+        }
+      }
+    } catch (error) {
+      console.error(error)
+      clearTimeout(intervalTimeOut)
     }
   }
 
@@ -165,6 +189,7 @@
         }
       }
     } catch (error) {
+      console.error(error)
       clearTimeout(intervalTimeOut)
     }
   }
@@ -176,7 +201,7 @@
   const checkCollisions = (e) => {
     let { bullet, bullets } = e.detail
 
-    let allVillainsDestroyed = true
+ allVillainsDestroyed = true
 
     for (let j = 0; j < villains.length; j++) {
       let villain = villains[j]
