@@ -66,7 +66,6 @@
       await Tone.start()
     }
 
-    // Create a new Tone.js player for the bullet sound
     let bulletSound = new Tone.Player({
       url: "assets/mcGun.mp3",
       // url: "assets/gun.mp3",
@@ -77,9 +76,6 @@
         //   bulletSound.stop()
         // }, 500)
       },
-      // onerror: (error) => {
-      //   console.error("Error loading audio:", error)
-      // },
     })
   }
 
