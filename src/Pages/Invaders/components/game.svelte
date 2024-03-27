@@ -10,7 +10,7 @@
   import Life from "../shared/life.svelte"
   import EnemyBullet from "../shared/enemyBullet.svelte"
   import MainVillain from "../shared/mainVillain.svelte"
-  import {initiateEnemySound} from "../script/playSound"
+  import { initiateEnemySound } from "../script/playSound"
 
   let spaceShip
   let gridWidth = 12
@@ -128,7 +128,6 @@
       }
     }
   }
- 
 
   const downAliens = async () => {
     try {
@@ -144,19 +143,19 @@
       mainVillain = { x: mainVillainX, y: mainVillainY }
     }
   }
-  
+
   const moveMainVillain = async () => {
     try {
       let canMove = false
-      if (!canMove) {        
+      if (!canMove) {
         mainVillain.x -= villainSpeed
-        if (mainVillain.x-20 < 0) {
+        if (mainVillain.x - 20 < 0) {
           mainVillain.y += villainHeight
           canMove = true
         }
       } else {
-        mainVillain.x += villainSpeed  
-        if (mainVillain.x+30 >= 100) {
+        mainVillain.x += villainSpeed
+        if (mainVillain.x + 30 >= 100) {
           mainVillain.y += villainHeight
 
           canMove = false
@@ -201,7 +200,7 @@
   const checkCollisions = (e) => {
     let { bullet, bullets } = e.detail
 
- allVillainsDestroyed = true
+    let allVillainsDestroyed = true
 
     for (let j = 0; j < villains.length; j++) {
       let villain = villains[j]
