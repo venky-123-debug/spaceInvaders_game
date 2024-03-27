@@ -158,13 +158,13 @@
       if (!canMove) {
         mainVillainX -= villainSpeed
         if (mainVillainX - 20 < 0) {
-          mainVillainY += villainHeight
+          mainVillainY += 3
           canMove = true
         }
       } else {
         mainVillainX+= villainSpeed
         if (mainVillainX + 30 >= 100) {
-          mainVillainY += villainHeight
+          mainVillainY += 3
           canMove = false
         }
       }
@@ -200,6 +200,7 @@
     }
   }
 
+  let shootScore = 0
   const checkCollisions = (e) => {
     let { bullet, bullets } = e.detail
 
@@ -216,6 +217,8 @@
 
       if (bulletLeft >= villainLeft && bulletLeft <= villainRight && bulletTop >= villainTop && bulletTop <= villainBottom && villain.icon === 0) {
         score += 100
+        shootScore+=1
+        console.log({shootScore})
         villain.icon = 1
         bullets.splice(bullets.indexOf(bullet), 1)
         break
@@ -226,12 +229,14 @@
       }
     }
 
-    if (allVillainsDestroyed && !enableMainVillain) {
-      let mainVillainWidth = mainVillainX + 20
+    // if (allVillainsDestroyed ) {
+    if (allVillainsDestroyed && !enableMainVillain&&shootScore==villains.length) {
+      let mainVillainWidth = mainVillainX 
       let mainVillainHeight = mainVillainY + 20
       console.log({ mainVillainWidth, mainVillainHeight })
       enableMainVillain = true
       if (bulletLeft >= mainVillainX && bulletTop <= mainVillainY) {
+        console.log("mainVillainEntry")
         mainVillainOpacity -= 10
         bullets.splice(bullets.indexOf(bullet), 1)
       }
