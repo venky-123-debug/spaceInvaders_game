@@ -1,6 +1,5 @@
 <script>
   import { createEventDispatcher } from "svelte"
-    import GameOverScreen from "../components/gameOverScreen.svelte"
   const dispatch = createEventDispatcher()
   export let score = 0
   export let isGameOver= false
@@ -8,10 +7,6 @@
 </script>
 
 <div class="fixed inset-0 z-20 flex h-full flex-col items-center justify-center gap-3 bg-black backdrop-blur-md">
-  <div class="absoulte w-full h-full">
-
-    <!-- <GameOverScreen/> -->
-  </div>
   <div class="absolute top-16 right-16">
     <i class="fa-solid fa-planet-ringed text-3xl text-gray-500" />
   </div>
