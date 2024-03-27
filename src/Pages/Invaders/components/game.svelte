@@ -1,6 +1,7 @@
 <script>
   import { onMount, onDestroy, afterUpdate } from "svelte"
-  import * as Tone from 'tone';
+  import * as Tone from "tone"
+  // const { Midi } = require('@tonejs/midi')
   import Player from "../shared/ship.svelte"
   import Enemy from "../shared/villains.svelte"
   import GameOver from "../shared/gameOver.svelte"
@@ -38,22 +39,67 @@
   let mainVillainX = 50
   let mainVillainY = 10
   let enableMainVillain = false
+  // let toneAutoStart = false
+  let player
 
   let enemyColorArray = ["#ea580c", "#15803d", "#0891b2", "#db2777", "#e11d48"]
+  import { Midi } from "@tonejs/midi"
 
-  const player = new Tone.Player({
-  url: 'path/to/your/audio/file.mp3',
-  autostart: true,
-  loop: true, 
-}).toDestination(); 
+  async function loadMidiFromUrl(url) {
+    try {
+      const response = await fetch(url)
+      const arrayBuffer = await response.arrayBuffer()
 
+      const midi = new Midi(arrayBuffer)
+      const json = midi.toJSON()
 
-  onMount(() => {
-    containerWidth = window.innerWidth
-    villainColor = enemyColorArray[Math.floor(Math.random() * enemyColorArray.length)]
-    if (!startPage && !isPlayerWon) {
+      return json
+    } catch (error) {
+      console.error("Error loading MIDI file:", error)
+      return null
+    }
+  }
+
+  const loadTone = async () => {
+    try {
+      let midiUrl = "assets/gameBgm.mid"
+      let midiJson = await loadMidiFromUrl(midiUrl)
+      console.log({ midiJson })
+      if (midiJson) {
+        let newUrl = "data:audio/midi;base64," + btoa(JSON.stringify(midiJson))
+        // console.log({newUrl})
+        player = new Tone.Player({
+          url: newUrl,
+          autostart: true,
+          loop: true,
+        }).toDestination()
+        console.log({player})
+      } else {
+        console.error("Failed to load MIDI file.")
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // let player = new Tone.Player({
+  //   url: "assets/gameBgm.mid",
+  //   // url: "assets/bgm.mp3",
+  //   autostart: true,
+  //   loop: true,
+  // }).toDestination()
+
+  const startToneAudio = () => {
+    Tone.start()
     player.start()
   }
+  onMount(async () => {
+    await loadTone()
+    if (!startPage && !isPlayerWon) {
+      startToneAudio()
+    }
+    containerWidth = window.innerWidth
+    assignRandomColorToVillain()
     if (!startPage) {
       startAction()
     } else {
@@ -81,7 +127,7 @@
   })
 
   const assignRandomColorToVillain = () => {
-
+    villainColor = enemyColorArray[Math.floor(Math.random() * enemyColorArray.length)]
   }
   const handleShield = () => {
     if (shield) {
@@ -257,6 +303,10 @@
   const gameClose = () => {
     window.location.reload()
   }
+  // const toggleMute = () => {
+  //   player.mute = !player.mute
+  //   console.log(player.mute,player )
+  // }
 </script>
 
 {#if startPage}

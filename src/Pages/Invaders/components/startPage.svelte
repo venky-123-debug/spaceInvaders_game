@@ -3,6 +3,7 @@
   const dispatch = createEventDispatcher()
 
   let active = "Easy"
+  let toggleSound = false
 
   const dispatchEvent = () => {
     dispatch("start", active)
@@ -14,11 +15,17 @@
       dispatchEvent()
     }
   }
+  const toggleMute = () => {
+    toggleSound=!toggleSound
+    dispatch("toneMute")
+  }
 </script>
 
 <svelte:window on:keydown|stopPropagation|preventDefault={handleDispatch} />
 
 <div class="relative isolate h-screen w-screen overflow-hidden bg-gray-900">
+  <!-- <button type="button" class="absolute top-10 right-10 h-9 w-9 rounded-md flex items-center justify-center border border-[#a0a1a583]" on:click={toggleMute}><i class="{toggleSound?"fa-solid fa-volume":"fa-regular fa-volume-slash"} text-white text-lg"></i></button> -->
+
   <div class="mx-auto grid max-w-7xl grid-cols-1">
     <div class="relative px-6 pb-20 pt-24 sm:pt-32 lg:static lg:py-48">
       <div class="mx-auto w-full">
