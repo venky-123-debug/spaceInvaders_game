@@ -1,5 +1,6 @@
 <script>
   import { onMount, createEventDispatcher } from "svelte"
+  import * as Tone from "tone"
 
   const dispatch = createEventDispatcher()
 
@@ -7,11 +8,13 @@
   export let spaceshipPosition = 0
   export let spaceshipPositionY = 89
   export let shield = false
+  export let startPage = false
+  export let isPlayerWon= false
 
   let containerWidth = 0
   let bullets = []
-  let keyDownStartTime 
-  let keyDownEndTime 
+  let keyDownStartTime
+  let keyDownEndTime
 
   const moveShip = (e) => {
     if (e.code === "ArrowLeft" && spaceshipPosition > 0) {
@@ -31,7 +34,7 @@
     bullets = bullets.filter((bullet) => bullet.y > 0)
     bullets.forEach((bullet) => {
       bullet.y -= 2
-      dispatch("shootEnemy", {bullet, bullets }) 
+      dispatch("shootEnemy", { bullet, bullets })
     })
     requestAnimationFrame(moveBullets)
   }
@@ -40,6 +43,7 @@
     if (e.code === "Space") {
       // keyDownStartTime = Date.now()
       // console.log({keyDownStartTime})
+    if(!startPage && !isPlayerWon)  initiateSound()
       fireBullet()
     }
     moveShip(e)
@@ -56,6 +60,29 @@
   //   }
   // }
 
+  const initiateSound = async () => {
+    // Initialize Tone.js if it hasn't been started yet
+    if (!Tone.context.state === "running") {
+      await Tone.start()
+    }
+
+    // Create a new Tone.js player for the bullet sound
+    let bulletSound = new Tone.Player({
+      url: "assets/mcGun.mp3",
+      // url: "assets/gun.mp3",
+      autostart: true,
+      onload: () => {
+        bulletSound.toDestination().start()
+        // setTimeout(() => {
+        //   bulletSound.stop()
+        // }, 500)
+      },
+      // onerror: (error) => {
+      //   console.error("Error loading audio:", error)
+      // },
+    })
+  }
+
   onMount(() => {
     spaceshipPosition = 50
     containerWidth = spaceShip.parentElement.offsetWidth
@@ -63,13 +90,11 @@
   })
 </script>
 
-<svelte:window 
-  on:keydown|stopPropagation|preventDefault={handleKeyDown} 
-/>
+<svelte:window on:keydown|stopPropagation|preventDefault={handleKeyDown} />
 
 <div bind:this={spaceShip} class="absolute" style="left: {spaceshipPosition}%;top:{spaceshipPositionY}%;">
-  <div class="border-2 p-3 rounded-md {shield ? ' border-red-600' : ' border-transparent'} ">
-    <i class="fa-solid fa-jet-fighter-up text-4xl text-white"></i>
+  <div class="rounded-md border-2 p-3 {shield ? ' border-red-600' : ' border-transparent'} ">
+    <i class="fa-solid fa-jet-fighter-up text-4xl text-white" />
   </div>
 </div>
 

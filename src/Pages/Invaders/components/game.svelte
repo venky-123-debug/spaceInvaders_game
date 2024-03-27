@@ -44,7 +44,8 @@
 
   let player = new Tone.Player({
     url: "assets/bgm.mp3",
-    autostart: true,
+    autostart: false,
+    // autostart: true,
     loop: true,
   }).toDestination()
   const startToneAudio = () => {
