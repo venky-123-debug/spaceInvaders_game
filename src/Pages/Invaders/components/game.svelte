@@ -47,8 +47,8 @@
 
   let player = new Tone.Player({
     url: "assets/bgm.mp3",
-    autostart: false,
-    // autostart: true,
+    // autostart: false,
+    autostart: true,
     loop: true,
   }).toDestination()
   const startToneAudio = () => {
@@ -72,7 +72,9 @@
       enemyBulletCollision()
       if (enableMainVillain) {
         fireMainVillainBullet()
+      
       }
+      moveMainVillain()
     }
   })
 
@@ -84,7 +86,7 @@
       if (enableMainVillain) {
         // fireMainVillainBullet()
         initializeMainVillain()
-        moveMainVillain()
+        // moveMainVillain()
       }
     }
   })
@@ -149,28 +151,37 @@
   const initializeMainVillain = () => {
     if (enableMainVillain) {
       mainVillain = { x: mainVillainX, y: mainVillainY }
+      // console.log({mainVillain})
     }
   }
 
+  let canMove = true
   const moveMainVillain = async () => {
+    let timer
     try {
-      let canMove = false
-      if (!canMove) {
-        mainVillainX -= villainSpeed
-        if (mainVillainX - 20 < 0) {
-          mainVillainY += 3
-          canMove = true
+      timer = setInterval(() => {
+        if (!canMove) {
+          mainVillainX -= 3
+          if (mainVillainX < 10) {
+            mainVillainY += 3
+            canMove = true
+          }
+        } else {
+          mainVillainX += 3
+          if (mainVillainX >= 85) {
+            console.log("width == 100")
+            mainVillainY += 3
+            canMove = false
+          }
         }
-      } else {
-        mainVillainX+= villainSpeed
-        if (mainVillainX + 30 >= 100) {
-          mainVillainY += 3
-          canMove = false
+        if (mainVillainY >= 85) {
+          isGameOver = true
+          return
         }
-      }
+      }, 1000);
+      // console.log({ mainVillainY })
     } catch (error) {
       console.error(error)
-      clearTimeout(intervalTimeOut)
     }
   }
 
@@ -196,7 +207,6 @@
       }
     } catch (error) {
       console.error(error)
-      clearTimeout(intervalTimeOut)
     }
   }
 
@@ -217,8 +227,7 @@
 
       if (bulletLeft >= villainLeft && bulletLeft <= villainRight && bulletTop >= villainTop && bulletTop <= villainBottom && villain.icon === 0) {
         score += 100
-        shootScore+=1
-        console.log({shootScore})
+        shootScore += 1
         villain.icon = 1
         bullets.splice(bullets.indexOf(bullet), 1)
         break
@@ -229,15 +238,12 @@
       }
     }
 
-    // if (allVillainsDestroyed ) {
-    if (allVillainsDestroyed && !enableMainVillain&&shootScore==villains.length) {
-      let mainVillainWidth = mainVillainX 
-      let mainVillainHeight = mainVillainY + 20
-      console.log({ mainVillainWidth, mainVillainHeight })
+    if (allVillainsDestroyed && !enableMainVillain && shootScore == villains.length) {
+
       enableMainVillain = true
       if (bulletLeft >= mainVillainX && bulletTop <= mainVillainY) {
         console.log("mainVillainEntry")
-        mainVillainOpacity -= 10
+        mainVillainOpacity -= 5
         bullets.splice(bullets.indexOf(bullet), 1)
       }
       if (mainVillainOpacity == 0) {
@@ -259,15 +265,17 @@
 
   const fireEnemyBullet = () => {
     if (startPage || !isGameOver || isPlayerWon || !enableMainVillain) {
-      let randomVillainIndex
-      bulletTimer = setInterval(() => {
-        for (let i = 0; i < villains.length; i++) {
-          if (villains[i].icon == 0) randomVillainIndex = Math.floor(Math.random() * villains.length)
-        }
-        let randomVillain = villains[randomVillainIndex]
-        let bullet = { x: randomVillain.x, y: randomVillain.y }
-        enemyBullets = [...enemyBullets, bullet]
-      }, 1500)
+      // if (shootScore <= villains.length) {
+        let randomVillainIndex
+        bulletTimer = setInterval(() => {
+          for (let i = 0; i < villains.length; i++) {
+            if (villains[i].icon == 0) randomVillainIndex = Math.floor(Math.random() * villains.length)
+          }
+          let randomVillain = villains[randomVillainIndex]
+          let bullet = { x: randomVillain.x, y: randomVillain.y }
+          enemyBullets = [...enemyBullets, bullet]
+        }, 1500)
+      // }
     }
   }
   let mainVillainBullets = []
@@ -364,7 +372,14 @@
         <MainVillainBullets bind:villainbullet />
       {/each}
     {/if}
-    <MainVillain bind:enableMainVillain bind:mainVillain bind:mainVillainOpacity />
+
+    {#if enableMainVillain}
+    <div class="absolute text-8xl text-red-500" style="left: {mainVillainX}%; top: {mainVillainY}%;};opacity:{mainVillainOpacity}%">
+      <i class="fa-solid fa-alien-8bit" />
+    </div>
+    {/if}
+
+    <!-- <MainVillain bind:enableMainVillain bind:mainVillain bind:mainVillainOpacity /> -->
 
     <Player
       bind:shield
