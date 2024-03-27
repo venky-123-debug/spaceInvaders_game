@@ -1,5 +1,6 @@
 <script>
   import { onMount, onDestroy, afterUpdate } from "svelte"
+  import * as Tone from 'tone';
   import Player from "../shared/ship.svelte"
   import Enemy from "../shared/villains.svelte"
   import GameOver from "../shared/gameOver.svelte"
@@ -8,6 +9,7 @@
   import Boost from "../shared/shield.svelte"
   import Life from "../shared/life.svelte"
   import EnemyBullet from "../shared/enemyBullet.svelte"
+  import MainVillain from "../shared/mainVillain.svelte"
 
   let spaceShip
   let gridWidth = 12
@@ -32,12 +34,26 @@
   let shield = false
   let shieldCount = 3
   let villainSpeed = 0
+  let mainVillain
+  let mainVillainX = 50
+  let mainVillainY = 10
+  let enableMainVillain = false
 
   let enemyColorArray = ["#ea580c", "#15803d", "#0891b2", "#db2777", "#e11d48"]
+
+  const player = new Tone.Player({
+  url: 'path/to/your/audio/file.mp3',
+  autostart: true,
+  loop: true, 
+}).toDestination(); 
+
 
   onMount(() => {
     containerWidth = window.innerWidth
     villainColor = enemyColorArray[Math.floor(Math.random() * enemyColorArray.length)]
+    if (!startPage && !isPlayerWon) {
+    player.start()
+  }
     if (!startPage) {
       startAction()
     } else {
@@ -56,6 +72,7 @@
       moveVillains()
       startAnimation()
       gameOver()
+      initializeMainVillain
     }
   })
 
@@ -63,6 +80,9 @@
     clearTimeout(intervalTimeOut, bulletTimer)
   })
 
+  const assignRandomColorToVillain = () => {
+
+  }
   const handleShield = () => {
     if (shield) {
       setTimeout(() => {
@@ -101,6 +121,11 @@
       for (let col = 0; col < gridWidth; col++) {
         villains.push({ x: col * villainWidth, y: row * (villainHeight + 2), icon: 0 })
       }
+    }
+  }
+  const initializeMainVillain = () => {
+    if (enableMainVillain) {
+      mainVillain = { x: mainVillainX, y: mainVillainY }
     }
   }
 
@@ -183,6 +208,7 @@
       downEnemyBullets()
     }, 15)
   }
+
   const fireEnemyBullet = () => {
     if (startPage || !isGameOver || isPlayerWon) {
       let randomVillainIndex
@@ -264,6 +290,8 @@
       {/each}
     </div>
     <Boost bind:shield bind:shieldCount />
+
+    <MainVillain bind:enableMainVillain bind:mainVillain />
 
     <Player
       bind:shield

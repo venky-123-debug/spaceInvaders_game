@@ -1,14 +1,17 @@
 <script>
   import { onMount, createEventDispatcher } from "svelte"
 
+  const dispatch = createEventDispatcher()
+
   export let spaceShip
   export let spaceshipPosition = 0
   export let spaceshipPositionY = 89
   export let shield = false
-  const dispatch = createEventDispatcher()
 
   let containerWidth = 0
   let bullets = []
+  let keyDownStartTime 
+  let keyDownEndTime 
 
   const moveShip = (e) => {
     if (e.code === "ArrowLeft" && spaceshipPosition > 0) {
@@ -18,6 +21,7 @@
       console.log(spaceshipPosition)
     }
   }
+
   const fireBullet = () => {
     let bullet = { x: spaceshipPosition + 2.5, y: 90 }
     bullets.push(bullet)
@@ -26,22 +30,31 @@
   const moveBullets = () => {
     bullets = bullets.filter((bullet) => bullet.y > 0)
     bullets.forEach((bullet) => {
-      // console.log("Bullet y before update:", bullet.y)
-      let bulletX = bullet.x
       bullet.y -= 2
-      let initialY = bullet.y
-      // console.log("Bullet y after update:", bullet.y)
-      dispatch("shootEnemy", { initialY, bulletX, bullet, bullets }) // Dispatch object with initial and updated positions
+      dispatch("shootEnemy", {bullet, bullets }) 
     })
     requestAnimationFrame(moveBullets)
   }
 
   const handleKeyDown = (e) => {
     if (e.code === "Space") {
+      // keyDownStartTime = Date.now()
+      // console.log({keyDownStartTime})
       fireBullet()
     }
     moveShip(e)
   }
+
+  // const handleKeyUp = (e) => {
+  //   if (e.code === "Space") {
+  //     // keyDownEndTime = Date.now()
+  //     // let duration = keyDownEndTime - keyDownStartTime
+  //     console.log({duration})
+  //     if (duration >= 1000) {
+  //       console.log("Spacebar held for more than 3 seconds")
+  //     }
+  //   }
+  // }
 
   onMount(() => {
     spaceshipPosition = 50
@@ -50,7 +63,9 @@
   })
 </script>
 
-<svelte:window on:keydown|stopPropagation|preventDefault={handleKeyDown} />
+<svelte:window 
+  on:keydown|stopPropagation|preventDefault={handleKeyDown} 
+/>
 
 <div bind:this={spaceShip} class="absolute" style="left: {spaceshipPosition}%;top:{spaceshipPositionY}%;">
   <div class="border-2 p-3 rounded-md {shield ? ' border-red-600' : ' border-transparent'} ">
