@@ -1,6 +1,7 @@
 <script>
   import { onMount, createEventDispatcher } from "svelte"
   import * as Tone from "tone"
+  import { initiateEnemySound } from "../script/playSound"
 
   const dispatch = createEventDispatcher()
 
@@ -44,7 +45,7 @@
       // keyDownStartTime = Date.now()
       // console.log({keyDownStartTime})
       if (!startPage && !isPlayerWon) {
-        initiateSound()
+        initiateEnemySound("assets/mcGun.mp3")
         fireBullet()
       }
     }

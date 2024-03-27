@@ -10,6 +10,7 @@
   import Life from "../shared/life.svelte"
   import EnemyBullet from "../shared/enemyBullet.svelte"
   import MainVillain from "../shared/mainVillain.svelte"
+  import {initiateEnemySound} from "../script/playSound"
 
   let spaceShip
   let gridWidth = 12
@@ -227,24 +228,24 @@
     }
   }
 
-  const initiateEnemySound = async (url) => {
-    // Initialize Tone.js if it hasn't been started yet
-    if (!Tone.context.state === "running") {
-      await Tone.start()
-    }
+  // const initiateEnemySound = async (url) => {
+  //   // Initialize Tone.js if it hasn't been started yet
+  //   if (!Tone.context.state === "running") {
+  //     await Tone.start()
+  //   }
 
-    let bulletSound = new Tone.Player({
-      url: url,
-      // url: "assets/gun.mp3",
-      autostart: true,
-      onload: () => {
-        bulletSound.toDestination().start()
-        // setTimeout(() => {
-        //   bulletSound.stop()
-        // }, 500)
-      },
-    })
-  }
+  //   let bulletSound = new Tone.Player({
+  //     url: url,
+  //     // url: "assets/gun.mp3",
+  //     autostart: true,
+  //     onload: () => {
+  //       bulletSound.toDestination().start()
+  //       // setTimeout(() => {
+  //       //   bulletSound.stop()
+  //       // }, 500)
+  //     },
+  //   })
+  // }
   const enemyBulletCollision = () => {
     bulletTimer = setInterval(() => {
       for (let i = 0; i < enemyBullets.length; i++) {
