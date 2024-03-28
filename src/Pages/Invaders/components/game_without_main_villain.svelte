@@ -218,7 +218,8 @@
   }
 
   const fireEnemyBullet = () => {
-    if (startPage || !isGameOver || isPlayerWon) {
+    if (startPage &&(!isGameOver || !isPlayerWon)) {
+    // if (startPage || !isGameOver || isPlayerWon) {
       let randomVillainIndex
       bulletTimer = setInterval(() => {
         for (let i = 0; i < villains.length; i++) {
