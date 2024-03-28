@@ -1,6 +1,5 @@
 <script>
   import { onMount, onDestroy, afterUpdate } from "svelte"
-  import { Midi } from "@tonejs/midi"
   import * as Tone from "tone"
   import Player from "../shared/ship.svelte"
   import Enemy from "../shared/villains.svelte"
@@ -11,6 +10,8 @@
   import Life from "../shared/life.svelte"
   import EnemyBullet from "../shared/enemyBullet.svelte"
   import MainVillain from "../shared/mainVillain.svelte"
+  import { initiateEnemySound } from "../script/playSound"
+  import MainVillainBullets from "../shared/mainVillainBullets.svelte"
 
   let spaceShip
   let gridWidth = 12
@@ -39,123 +40,43 @@
   let mainVillainX = 50
   let mainVillainY = 10
   let enableMainVillain = false
+  let mainVillainOpacity = 100
   // let toneAutoStart = false
-  let player
-  let hiddenButton
 
   let enemyColorArray = ["#ea580c", "#15803d", "#0891b2", "#db2777", "#e11d48"]
 
-  const loadMidiFromUrl = async (url) => {
-    try {
-      let response = await fetch(url)
-      let arrayBuffer = await response.arrayBuffer()
-
-      let midi = new Midi(arrayBuffer)
-      let json = midi.toJSON()
-
-      return json
-    } catch (error) {
-      console.error("Error loading MIDI file:", error)
-      return null
-    }
-  }
-
-  // const loadTone = async () => {
-  //   try {
-  //     let midiUrl = "assets/gameBgm.mid"
-  //     let midiJson = await loadMidiFromUrl(midiUrl)
-  //     console.log({ midiJson })
-  //     if (midiJson) {
-  //       let newUrl = "data:audio/midi;base64," + btoa(JSON.stringify(midiJson))
-  //       console.log({ newUrl })
-  //       player = new Tone.Player({
-  //         url: newUrl,
-  //         autostart: true,
-  //         loop: true,
-  //       }).toDestination()
-  //       console.log({ player })
-  //       if (Tone.context.state !== "running") {
-  //         await Tone.start()
-  //       }
-  //       // player.start()
-  //     } else {
-  //       console.error("Failed to load MIDI file.")
-  //     }
-  //   } catch (error) {
-  //     console.error(error)
-  //   }
-  // }
-
-  const loadTone = async () => {
-    try {
-      let midiUrl = "assets/gameBgm.mid"
-      let midiJson = await loadMidiFromUrl(midiUrl)
-      console.log({ midiJson })
-
-      if (midiJson) {
-        let newUrl = "data:audio/midi;base64," + btoa(JSON.stringify(midiJson))
-        console.log({ newUrl })
-
-        // Create a Tone.js Player instance
-        player = new Tone.Player({
-          url: newUrl,
-          autostart: true,
-          loop: true,
-        }).toDestination()
-
-        // Start the audio context if needed
-        if (Tone.context.state !== "running") {
-          await Tone.start()
-        }
-      } else {
-        console.error("Failed to load MIDI file.")
-      }
-    } catch (error) {
-      console.error("Error loading and playing MIDI file:", error)
-    }
-  }
-
+  let player = new Tone.Player({
+    url: "assets/bgm.mp3",
+    // autostart: false,
+    autostart: true,
+    loop: true,
+  }).toDestination()
   const startToneAudio = () => {
-    if (player && !player.state === "started") {
-      player.start()
+    Tone.start()
+    player.start()
+  }
+  onMount(() => {
+    if (!startPage && !isPlayerWon) {
+      startToneAudio()
     }
-  }
-
-  const startAudioPlayback = () => {
-    startToneAudio()
-  }
-
-  // let player = new Tone.Player({
-  //   url: "assets/gameBgm.mid",
-  //   // url: "assets/bgm.mp3",
-  //   autostart: true,
-  //   loop: true,
-  // }).toDestination()
-
-  // const startToneAudio = () => {
-  //   Tone.start()
-  //   player.start()
-  // }
-  onMount(async () => {
-    // startAudioPlayback()
-    console.log({ hiddenButton })
-    hiddenButton.addEventListener("click", startToneAudio)
-    // hiddenButton.addEventListener("click", startAudioPlayback)
-    await loadTone()
-    // if (!startPage && !isPlayerWon) {
-    //   startToneAudio()
-    // }
     containerWidth = window.innerWidth
     assignRandomColorToVillain()
     if (!startPage) {
       startAction()
     } else {
       if (!isGameOver) {
-        fireEnemyBullet()
+        if(villains.length) {
+
+          fireEnemyBullet()
+        }
       }
       initializeVillains()
       startEnemyFireLoop()
       enemyBulletCollision()
+      if (enableMainVillain) {
+        fireMainVillainBullet()
+      }
+      moveMainVillain()
     }
   })
 
@@ -163,9 +84,12 @@
     handleShield()
     if (!startPage || !isGameOver) {
       moveVillains()
-      startAnimation()
       gameOver()
-      initializeMainVillain
+      if (enableMainVillain) {
+        // fireMainVillainBullet()
+        initializeMainVillain()
+        // moveMainVillain()
+      }
     }
   })
 
@@ -190,7 +114,7 @@
       if (villains.length) {
         lastVillainY = villains[villains.length - 1].y
       }
-      if (lastVillainY >= 80) {
+      if (lastVillainY >= 80 || mainVillainY >= 80) {
         isGameOver = true
       }
     }
@@ -216,17 +140,48 @@
       }
     }
   }
-  const initializeMainVillain = () => {
-    if (enableMainVillain) {
-      mainVillain = { x: mainVillainX, y: mainVillainY }
-    }
-  }
 
   const downAliens = async () => {
     try {
       for (let i = 0; i < villains.length; i++) {
         villains[i].y += villainHeight
       }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  const initializeMainVillain = () => {
+    if (enableMainVillain) {
+      mainVillain = { x: mainVillainX, y: mainVillainY }
+      // console.log({mainVillain})
+    }
+  }
+
+  let canMove = true
+  const moveMainVillain = async () => {
+    let timer
+    try {
+      timer = setInterval(() => {
+        if (!canMove) {
+          mainVillainX -= 3
+          if (mainVillainX < 10) {
+            mainVillainY += 3
+            canMove = true
+          }
+        } else {
+          mainVillainX += 3
+          if (mainVillainX >= 85) {
+            console.log("width == 100")
+            mainVillainY += 3
+            canMove = false
+          }
+        }
+        if (mainVillainY >= 85) {
+          isGameOver = true
+          return
+        }
+      }, 1000)
+      // console.log({ mainVillainY })
     } catch (error) {
       console.error(error)
     }
@@ -253,23 +208,20 @@
         }
       }
     } catch (error) {
-      clearTimeout(intervalTimeOut)
+      console.error(error)
     }
   }
 
-  const startAnimation = () => {
-    // animationFrame = requestAnimationFrame(moveVillains)
-  }
-
+  let shootScore = 0
   const checkCollisions = (e) => {
     let { bullet, bullets } = e.detail
 
     let allVillainsDestroyed = true
 
+    let bulletLeft = bullet.x
+    let bulletTop = bullet.y
     for (let j = 0; j < villains.length; j++) {
       let villain = villains[j]
-      let bulletLeft = bullet.x
-      let bulletTop = bullet.y
       let villainLeft = villain.x
       let villainRight = villain.x + villainWidth
       let villainTop = villain.y
@@ -277,6 +229,7 @@
 
       if (bulletLeft >= villainLeft && bulletLeft <= villainRight && bulletTop >= villainTop && bulletTop <= villainBottom && villain.icon === 0) {
         score += 100
+        shootScore += 1
         villain.icon = 1
         bullets.splice(bullets.indexOf(bullet), 1)
         break
@@ -287,10 +240,19 @@
       }
     }
 
-    if (allVillainsDestroyed) {
-      isPlayerWon = true
+    if (allVillainsDestroyed && !enableMainVillain && shootScore == villains.length) {
+      enableMainVillain = true
+      if (bulletLeft >= mainVillainX && bulletTop <= mainVillainY) {
+        console.log("mainVillainEntry")
+        mainVillainOpacity -= 10
+        bullets.splice(bullets.indexOf(bullet), 1)
+      }
+      if (mainVillainOpacity == 0) {
+        isPlayerWon = true
+      }
     }
   }
+
   const downEnemyBullets = () => {
     for (let i = 0; i < enemyBullets.length; i++) {
       enemyBullets[i].y += 0.5
@@ -303,15 +265,30 @@
   }
 
   const fireEnemyBullet = () => {
-    if (startPage || !isGameOver || isPlayerWon) {
-      let randomVillainIndex
+    console.log(shootScore, villains.length)
+    if (villains && shootScore <= villains.length) {
+      if (startPage || !isGameOver || isPlayerWon || !enableMainVillain) {
+        // if (shootScore <= villains.length) {
+        let randomVillainIndex
+        bulletTimer = setInterval(() => {
+          for (let i = 0; i < villains.length; i++) {
+            if (villains[i].icon == 0) randomVillainIndex = Math.floor(Math.random() * villains.length)
+          }
+          let randomVillain = villains[randomVillainIndex]
+          let bullet = { x: randomVillain.x, y: randomVillain.y }
+          enemyBullets = [...enemyBullets, bullet]
+        }, 1500)
+        // }
+      }
+    }
+  }
+  let mainVillainBullets = []
+  const fireMainVillainBullet = () => {
+    if (mainVillain) {
       bulletTimer = setInterval(() => {
-        for (let i = 0; i < villains.length; i++) {
-          if (villains[i].icon == 0) randomVillainIndex = Math.floor(Math.random() * villains.length)
-        }
-        let randomVillain = villains[randomVillainIndex]
-        let bullet = { x: randomVillain.x, y: randomVillain.y }
-        enemyBullets = [...enemyBullets, bullet]
+        let bullet = { x: mainVillain.x, y: mainVillain.y }
+        mainVillainBullets = [...mainVillainBullets, bullet]
+        // console.log({ mainVillainBullets })
       }, 1500)
     }
   }
@@ -325,9 +302,13 @@
         }
         let distanceRatio = Math.abs(enemyBullets[i].x / spaceshipPosition)
         let ratioY = Math.abs(enemyBullets[i].y / spaceshipPositionY)
+
         if (distanceRatio >= 0.98 && distanceRatio <= 1.1 && ratioY <= 1 && ratioY >= 0.9) {
           enemyBullets = enemyBullets.filter((ene) => ene.x != enemyBullets[i].x)
           if (!shield) fallCount--
+          if (!startPage && !isPlayerWon) {
+            initiateEnemySound("assets/hitError.mp3")
+          }
         }
       }
     }, 200)
@@ -338,7 +319,10 @@
       if (isPlayerWon) {
         isPlayerWon = !isPlayerWon
       } else isGameOver = !isGameOver
+      enableMainVillain = false
       villains = []
+      mainVillainBullets = []
+
       initializeVillains()
       fallCount = 3
       shieldCount = 3
@@ -355,8 +339,6 @@
   //   console.log(player.mute,player )
   // }
 </script>
-
-<button bind:this={hiddenButton} type="button" class="hidden">Start Audio</button>
 
 {#if startPage}
   <StartPage on:start={startAction} />
@@ -389,14 +371,27 @@
       {/each}
     </div>
     <Boost bind:shield bind:shieldCount />
+    {#if enableMainVillain}
+      {#each mainVillainBullets as villainbullet}
+        <MainVillainBullets bind:villainbullet />
+      {/each}
+    {/if}
 
-    <MainVillain bind:enableMainVillain bind:mainVillain />
+    {#if enableMainVillain}
+      <div class="absolute text-8xl text-red-500" style="left: {mainVillainX}%; top: {mainVillainY}%;};opacity:{mainVillainOpacity}%">
+        <i class="fa-solid fa-alien-8bit" />
+      </div>
+    {/if}
+
+    <!-- <MainVillain bind:enableMainVillain bind:mainVillain bind:mainVillainOpacity /> -->
 
     <Player
       bind:shield
       bind:spaceShip
       bind:spaceshipPosition
       bind:spaceshipPositionY
+      bind:isPlayerWon
+      bind:startPage
       on:shootEnemy={(e) => {
         checkCollisions(e)
       }}

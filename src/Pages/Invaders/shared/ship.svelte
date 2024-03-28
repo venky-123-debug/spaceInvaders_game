@@ -22,7 +22,6 @@
       spaceshipPosition -= 1
     } else if (e.code === "ArrowRight" && spaceshipPosition < 96) {
       spaceshipPosition += 1
-      console.log(spaceshipPosition)
     }
   }
 
